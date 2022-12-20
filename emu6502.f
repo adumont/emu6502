@@ -13,8 +13,13 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 
 \ Target RAM operations
 : TC@ ( addr -- byte )    RAM + C@ ;
-: T@  ( addr -- word )    RAM +  @ ;
 : TC! ( byte addr -- )    RAM + C! ;
+: T@  ( addr -- word )    RAM +  @ ;
+: T!  ( addr -- word )    RAM +  ! ;
+
+0000 VALUE THERE \ Target HERE
+: TC, ( b -- ) THERE TC!   THERE 1+ TO THERE ;
+: T,  ( b -- ) THERE T!    THERE 2+ TO THERE ;
 
 \ -- PC --
 

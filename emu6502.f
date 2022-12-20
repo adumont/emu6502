@@ -56,6 +56,7 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 
 :NONAME ( BRK   ) .( BRK) CR ; $00 BIND
 
+\ -- boilerplate opcodes definitions to be defined
 :NONAME ( ADC INDX   ) ; $61 BIND \ ADC (zp,x)
 :NONAME ( ADC ZIND   ) ; $72 BIND \ ADC (zp)
 :NONAME ( ADC INDY   ) ; $71 BIND \ ADC (zp),y

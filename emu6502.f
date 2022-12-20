@@ -169,6 +169,22 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( LDA ZIND   ) PC@++  T@                 TC@ LDA ; $B2 BIND \ LDA (zp)
 :NONAME ( LDA INDY   ) PC@++  T@ _Y C@ +         TC@ LDA ; $B1 BIND \ LDA (zp),y
 
+: STA ( addr -- ) _A C@ SWAP TC! ;
+:NONAME ( STA ABS    ) PC@2++                        STA ; $8D BIND \ STA a
+:NONAME ( STA ZP     ) PC@++                         STA ; $85 BIND \ STA zp
+:NONAME ( STA ZPX    ) PC@++  _X C@ + $FF AND        STA ; $95 BIND \ STA zp,x
+:NONAME ( STA ABSX   ) PC@2++ _X C@ +            TC@ STA ; $9D BIND \ STA a,x
+:NONAME ( STA ABSY   ) PC@2++ _Y C@ +            TC@ STA ; $99 BIND \ STA a,y
+:NONAME ( STA INDX   ) PC@++  _X C@ + $FF AND T@ TC@ STA ; $81 BIND \ STA (zp,x)
+:NONAME ( STA ZIND   ) PC@++  T@                 TC@ STA ; $92 BIND \ STA (zp)
+:NONAME ( STA INDY   ) PC@++  T@ _Y C@ +         TC@ STA ; $91 BIND \ STA (zp),y
+
+: STZ ( addr -- ) 0 SWAP TC! ;
+:NONAME ( STZ ABS    ) PC@2++                        STZ ; $9C BIND \ STZ a
+:NONAME ( STZ ABSX   ) PC@2++ _X C@ +            TC@ STZ ; $9E BIND \ STZ a,x
+:NONAME ( STZ ZP     ) PC@++                         STZ ; $64 BIND \ STZ zp
+:NONAME ( STZ ZPX    ) PC@++  _X C@ + $FF AND        STZ ; $74 BIND \ STZ zp,x
+
 : LDX ( b -- ) >N >Z _X C! ;
 :NONAME ( LDX IMM    ) PC@++                         LDX ; $A2 BIND \ LDX #
 :NONAME ( LDX ZP     ) PC@++                     TC@ LDX ; $A6 BIND \ LDX zp
@@ -176,12 +192,22 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( LDX ABSY   ) PC@2++ _Y C@ +            TC@ LDX ; $BE BIND \ LDX a,y
 :NONAME ( LDX ZPY    ) PC@++  _Y C@ + $FF AND    TC@ LDA ; $B6 BIND \ LDX zp,y
 
+: STX ( addr -- ) _X C@ SWAP TC! ;
+:NONAME ( STX ABS    ) PC@2++                        STX ; $8E BIND \ STX a
+:NONAME ( STX ZP     ) PC@++                         STX ; $86 BIND \ STX zp
+:NONAME ( STX ZPY    ) PC@++  _Y C@ + $FF AND    TC@ STX ; $96 BIND \ STX zp,y
+
 : LDY ( b -- ) >N >Z _Y C! ;
 :NONAME ( LDY IMM    ) PC@++                         LDY ; $A0 BIND \ LDY #
 :NONAME ( LDY ZP     ) PC@++                     TC@ LDY ; $A4 BIND \ LDY zp
 :NONAME ( LDY ABS    ) PC@2++                    TC@ LDY ; $AC BIND \ LDY a
 :NONAME ( LDY ABSX   ) PC@2++ _X C@ +            TC@ LDY ; $BC BIND \ LDY a,x
 :NONAME ( LDY ZPX    ) PC@++  _X C@ + $FF AND    TC@ LDY ; $B4 BIND \ LDY zp,x
+
+: STY ( addr -- ) _X C@ SWAP TC! ;
+:NONAME ( STY ABS    ) PC@2++                        STY ; $8C BIND \ STY a
+:NONAME ( STY ZP     ) PC@++                         STY ; $84 BIND \ STY zp
+:NONAME ( STY ZPX    ) PC@++  _X C@ + $FF AND        STY ; $94 BIND \ STY zp,x
 
 :NONAME ( LSR ACC    ) ; $4A BIND \ LSR A
 :NONAME ( LSR ABS    ) ; $4E BIND \ LSR a
@@ -246,41 +272,34 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( SMB5 ZP    ) ; $D7 BIND \ SMB5 zp
 :NONAME ( SMB6 ZP    ) ; $E7 BIND \ SMB6 zp
 :NONAME ( SMB7 ZP    ) ; $F7 BIND \ SMB7 zp
-:NONAME ( STA INDX   ) ; $81 BIND \ STA (zp,x)
-:NONAME ( STA ZIND   ) ; $92 BIND \ STA (zp)
-:NONAME ( STA INDY   ) ; $91 BIND \ STA (zp),y
-:NONAME ( STA ABS    ) ; $8D BIND \ STA a
-:NONAME ( STA ABSX   ) ; $9D BIND \ STA a,x
-:NONAME ( STA ABSY   ) ; $99 BIND \ STA a,y
-:NONAME ( STA ZP     ) ; $85 BIND \ STA zp
-:NONAME ( STA ZPX    ) ; $95 BIND \ STA zp,x
-:NONAME ( STP IMPL   ) ; $DB BIND \ STP i
-:NONAME ( STX ABS    ) ; $8E BIND \ STX a
-:NONAME ( STX ZP     ) ; $86 BIND \ STX zp
-:NONAME ( STX ZPY    ) ; $96 BIND \ STX zp,y
-:NONAME ( STY ABS    ) ; $8C BIND \ STY a
-:NONAME ( STY ZP     ) ; $84 BIND \ STY zp
-:NONAME ( STY ZPX    ) ; $94 BIND \ STY zp,x
+
 :NONAME ( STZ ABS    ) ; $9C BIND \ STZ a
 :NONAME ( STZ ABSX   ) ; $9E BIND \ STZ a,x
 :NONAME ( STZ ZP     ) ; $64 BIND \ STZ zp
 :NONAME ( STZ ZPX    ) ; $74 BIND \ STZ zp,x
+
 :NONAME ( TAX IMPL   ) ; $AA BIND \ TAX i
 :NONAME ( TAY IMPL   ) ; $A8 BIND \ TAY i
-:NONAME ( TRB ABS    ) ; $1C BIND \ TRB a
-:NONAME ( TRB ZP     ) ; $14 BIND \ TRB zp
-:NONAME ( TSB ABS    ) ; $0C BIND \ TSB a
-:NONAME ( TSB ZP     ) ; $04 BIND \ TSB zp
+
 :NONAME ( TSX IMPL   ) ; $BA BIND \ TSX i
 :NONAME ( TXA IMPL   ) ; $8A BIND \ TXA i
+
 :NONAME ( TXS IMPL   ) ; $9A BIND \ TXS i
 :NONAME ( TYA IMPL   ) ; $98 BIND \ TYA i
+
+:NONAME ( STP IMPL   ) ; $DB BIND \ STP i
+
+:NONAME ( TRB ABS    ) ; $1C BIND \ TRB a
+:NONAME ( TRB ZP     ) ; $14 BIND \ TRB zp
+
+:NONAME ( TSB ABS    ) ; $0C BIND \ TSB a
+:NONAME ( TSB ZP     ) ; $04 BIND \ TSB zp
+
 :NONAME ( WAI IMPL   ) ; $CB BIND \ WAI i
 
 
 
 \ -- those have to be merged into the block above!
-:NONAME ( STAnn ) _A C@ PC@2++ TC!  ; $8D BIND
 
 :NONAME ( TAX   ) _A  C@ _X  C! ; $AA BIND
 :NONAME ( TXA   ) _X  C@ _A  C! ; $8A BIND

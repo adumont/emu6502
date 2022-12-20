@@ -306,12 +306,13 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 
 \ -- those have to be merged into the block above!
 
-:NONAME ( TAX   ) _A  C@ _X  C! ; $AA BIND
-:NONAME ( TXA   ) _X  C@ _A  C! ; $8A BIND
-:NONAME ( TXS   ) _X  C@ _SP C! ; $9A BIND
-:NONAME ( TSX   ) _SP C@ _X  C! ; $BA BIND
-:NONAME ( TAY   ) _A  C@ _Y  C! ; $A8 BIND
-:NONAME ( TYA   ) _Y  C@ _A  C! ; $98 BIND
+:NONAME ( TAX   ) _A  C@   >N >Z   _X  C! ; $AA BIND
+:NONAME ( TXA   ) _X  C@   >N >Z   _A  C! ; $8A BIND
+:NONAME ( TAY   ) _A  C@   >N >Z   _Y  C! ; $A8 BIND
+:NONAME ( TYA   ) _Y  C@   >N >Z   _A  C! ; $98 BIND
+
+:NONAME ( TSX   ) _SP C@   >N >Z   _X  C! ; $BA BIND
+:NONAME ( TXS   ) _X  C@           _SP C! ; $9A BIND
 
 : INCR ( reg -- ) DUP C@ 1+  SWAP C! ; \ no need to $FF MOD as we store with C!
 

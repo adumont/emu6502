@@ -5,6 +5,9 @@
 \ At the moment, host Forth is AlexFORTH on 6502
 \ Target CPU is 65C02 variant
 
+
+HEX
+
 CREATE _A  0 C,   CREATE _X  0 C,   CREATE _Y  0 C,
 CREATE _SP 0 C,   CREATE _PC 0  ,   CREATE _P  0 C,
 
@@ -331,22 +334,27 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( DEX   ) _X DECR ; $CA BIND
 :NONAME ( DEY   ) _Y DECR ; $88 BIND
 
-
-: T= = 0= IF CR .( ** ERROR ** ) CR CR THEN ;
+\ TESTS
+: T?= ( a b -- )    = 0= IF CR .( ** ERROR ** ) CR CR THEN ;
+: T?A ( b -- )      _A C@ T= ;
+: T?X ( b -- )      _X C@ T= ;
+: T?Y ( b -- )      _Y C@ T= ;
+: T?P ( b -- )      _P C@ T= ;
+: T?MEM ( addr b -- )  SWAP TC@ T= ;
 
 \-- store a minimal program
 
+: ORG   DUP TO THERE _PC ! ;
+: _     TC, ;
+
 \ Test LDA IMM
-0200 DUP TO THERE _PC !
+$0200 ORG
 0 _A C!
-A9 TC, FF TC,   \ 0000 LDA #$FF
-NEXT
-_A C@ FF T=
-_P C@ 'N AND 'N T=
+A9 _ FF _   \ 0000 LDA #$FF
+NEXT $FF T?A $80 T?P
 
 \ Test STA ABS
-0200 DUP TO THERE _PC !
+0200 ORG
 0 0222 TC!
-8D TC, 0222 T,  \ 0002 STA $0222
-NEXT
-0222 TC@ FF T=
+8D _ 22 _ 02 _  \ 0002 STA $0222
+NEXT 0222 FF T?MEM

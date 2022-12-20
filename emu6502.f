@@ -170,7 +170,7 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( LDA ABSX   ) WORD@ _X C@ +            TC@ LDA ; $BD BIND \ LDA a,x
 :NONAME ( LDA ABSY   ) WORD@ _Y C@ +            TC@ LDA ; $B9 BIND \ LDA a,y
 :NONAME ( LDA ZPX    ) BYTE@ _X C@ + $FF AND    TC@ LDA ; $B5 BIND \ LDA zp,x
-:NONAME ( LDA INDX   ) BYTE@ _X C@ + $FF AND T@ TC@ LDA ; $A1 BIND \ LDA (zp,x)
+:NONAME ( LDA INDX   ) BYTE@ _X C@ + $FF AND T@ TC@ LDA ; $A1 BIND \ LDA (zp,x)         ( FACTOR!! )
 :NONAME ( LDA ZIND   ) BYTE@ T@                 TC@ LDA ; $B2 BIND \ LDA (zp)
 :NONAME ( LDA INDY   ) BYTE@ T@ _Y C@ +         TC@ LDA ; $B1 BIND \ LDA (zp),y
 

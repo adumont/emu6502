@@ -178,15 +178,15 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( STA ABS    ) WORD@                        STA ; $8D BIND \ STA a
 :NONAME ( STA ZP     ) BYTE@                        STA ; $85 BIND \ STA zp
 :NONAME ( STA ZPX    ) BYTE@ _X C@ + $FF AND        STA ; $95 BIND \ STA zp,x
-:NONAME ( STA ABSX   ) WORD@ _X C@ +            TC@ STA ; $9D BIND \ STA a,x
-:NONAME ( STA ABSY   ) WORD@ _Y C@ +            TC@ STA ; $99 BIND \ STA a,y
-:NONAME ( STA INDX   ) BYTE@ _X C@ + $FF AND T@ TC@ STA ; $81 BIND \ STA (zp,x)
-:NONAME ( STA ZIND   ) BYTE@ T@                 TC@ STA ; $92 BIND \ STA (zp)
-:NONAME ( STA INDY   ) BYTE@ T@ _Y C@ +         TC@ STA ; $91 BIND \ STA (zp),y
+:NONAME ( STA ABSX   ) WORD@ _X C@ +                STA ; $9D BIND \ STA a,x
+:NONAME ( STA ABSY   ) WORD@ _Y C@ +                STA ; $99 BIND \ STA a,y
+:NONAME ( STA INDX   ) BYTE@ _X C@ + $FF AND T@     STA ; $81 BIND \ STA (zp,x)
+:NONAME ( STA ZIND   ) BYTE@ T@                     STA ; $92 BIND \ STA (zp)
+:NONAME ( STA INDY   ) BYTE@ T@ _Y C@ +             STA ; $91 BIND \ STA (zp),y
 
 : STZ ( addr -- ) 0 SWAP TC! ;
 :NONAME ( STZ ABS    ) WORD@                        STZ ; $9C BIND \ STZ a
-:NONAME ( STZ ABSX   ) WORD@ _X C@ +            TC@ STZ ; $9E BIND \ STZ a,x
+:NONAME ( STZ ABSX   ) WORD@ _X C@ +                STZ ; $9E BIND \ STZ a,x
 :NONAME ( STZ ZP     ) BYTE@                        STZ ; $64 BIND \ STZ zp
 :NONAME ( STZ ZPX    ) BYTE@ _X C@ + $FF AND        STZ ; $74 BIND \ STZ zp,x
 
@@ -200,7 +200,7 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 : STX ( addr -- ) _X C@ SWAP TC! ;
 :NONAME ( STX ABS    ) WORD@                        STX ; $8E BIND \ STX a
 :NONAME ( STX ZP     ) BYTE@                        STX ; $86 BIND \ STX zp
-:NONAME ( STX ZPY    ) BYTE@ _Y C@ + $FF AND    TC@ STX ; $96 BIND \ STX zp,y
+:NONAME ( STX ZPY    ) BYTE@ _Y C@ + $FF AND        STX ; $96 BIND \ STX zp,y
 
 : LDY ( b -- ) >N >Z _Y C! ;
 :NONAME ( LDY IMM    ) BYTE@                        LDY ; $A0 BIND \ LDY #

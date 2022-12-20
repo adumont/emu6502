@@ -332,24 +332,21 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( DEY   ) _Y DECR ; $88 BIND
 
 
+: T= = 0= IF CR .( ** ERROR ** ) CR CR THEN ;
 
 \-- store a minimal program
 
-HERE
-A9 C, FF C,   \ 0000 LDA #$FF
-8D C, 0222 ,  \ 0002 STA $0222
-\ will put FF in 0222
+\ Test LDA IMM
+0200 DUP TO THERE _PC !
+0 _A C!
+A9 TC, FF TC,   \ 0000 LDA #$FF
+NEXT
+_A C@ FF T=
+_P C@ 'N AND 'N T=
 
-RAM 5 CMOVE
-
-\ example run
-ok NEXT
-ok _A C@ C.
-FF ok
-ok _PC @ .
-0002 ok
-ok 222 TC@ C.
-EA ok
-ok NEXT
-ok 222 TC@ C.
-FF ok
+\ Test STA ABS
+0200 DUP TO THERE _PC !
+0 0222 TC!
+8D TC, 0222 T,  \ 0002 STA $0222
+NEXT
+0222 TC@ FF T=

@@ -61,7 +61,6 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 : SET   ( mask -- )     _P C@ OR  _P C! ;
 : UPDATE-FLAG ( b/f reg -- ) SWAP IF SET ELSE CLEAR THEN ;
 
-:NONAME ( BRK   ) .( BRK) CR ; $00 BIND
 : >NZ  \ always updated together
 ( >N ) ( b -- b ) DUP 'N AND 'N UPDATE-FLAG
 ( >Z ) ( b -- b ) DUP     0= 'Z UPDATE-FLAG ;
@@ -71,6 +70,9 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 : >C   ( f -- f ) DUP        'C UPDATE-FLAG ;
 
 \ -- boilerplate opcodes definitions to be defined
+
+:NONAME ( BRK STCK   ) .( BRK) CR ; $00 BIND \ BRK s
+
 :NONAME ( ADC INDX   ) ; $61 BIND \ ADC (zp,x)
 :NONAME ( ADC ZIND   ) ; $72 BIND \ ADC (zp)
 :NONAME ( ADC INDY   ) ; $71 BIND \ ADC (zp),y
@@ -94,41 +96,33 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( ASL ABSX   ) ; $1E BIND \ ASL a,x
 :NONAME ( ASL ZP     ) ; $06 BIND \ ASL zp
 :NONAME ( ASL ZPX    ) ; $16 BIND \ ASL zp,x
-:NONAME ( BBR0 PCR   ) ; $0F BIND \ BBR0 r
-:NONAME ( BBR1 PCR   ) ; $1F BIND \ BBR1 r
-:NONAME ( BBR2 PCR   ) ; $2F BIND \ BBR2 r
-:NONAME ( BBR3 PCR   ) ; $3F BIND \ BBR3 r
-:NONAME ( BBR4 PCR   ) ; $4F BIND \ BBR4 r
-:NONAME ( BBR5 PCR   ) ; $5F BIND \ BBR5 r
-:NONAME ( BBR6 PCR   ) ; $6F BIND \ BBR6 r
-:NONAME ( BBR7 PCR   ) ; $7F BIND \ BBR7 r
-:NONAME ( BBS0 PCR   ) ; $8F BIND \ BBS0 r
-:NONAME ( BBS1 PCR   ) ; $9F BIND \ BBS1 r
-:NONAME ( BBS2 PCR   ) ; $AF BIND \ BBS2 r
-:NONAME ( BBS3 PCR   ) ; $BF BIND \ BBS3 r
-:NONAME ( BBS4 PCR   ) ; $CF BIND \ BBS4 r
-:NONAME ( BBS5 PCR   ) ; $DF BIND \ BBS5 r
-:NONAME ( BBS6 PCR   ) ; $EF BIND \ BBS6 r
-:NONAME ( BBS7 PCR   ) ; $FF BIND \ BBS7 r
-:NONAME ( BCC PCR    ) ; $90 BIND \ BCC r
-:NONAME ( BCS PCR    ) ; $B0 BIND \ BCS r
-:NONAME ( BEQ PCR    ) ; $F0 BIND \ BEQ r
+
+: ?BRA ( f -- ) BYTE@ SWAP IF _PC @ SWAP DUP $80 AND IF FF00 OR NEG - ELSE + THEN _PC ! ELSE DROP THEN ;
+:NONAME ( BRA PCR    ) 1               ?BRA ; $80 BIND \ BRA r
+:NONAME ( BEQ PCR    ) _P C@ 'Z AND    ?BRA ; $F0 BIND \ BEQ r
+:NONAME ( BNE PCR    ) _P C@ 'Z AND 0= ?BRA ; $D0 BIND \ BNE r
+:NONAME ( BCS PCR    ) _P C@ 'C AND    ?BRA ; $B0 BIND \ BCS r
+:NONAME ( BCC PCR    ) _P C@ 'C AND 0= ?BRA ; $90 BIND \ BCC r
+:NONAME ( BVS PCR    ) _P C@ 'V AND    ?BRA ; $70 BIND \ BVS r
+:NONAME ( BVC PCR    ) _P C@ 'V AND 0= ?BRA ; $50 BIND \ BVC r
+:NONAME ( BMI PCR    ) _P C@ 'N AND    ?BRA ; $30 BIND \ BMI r
+:NONAME ( BPL PCR    ) _P C@ 'N AND 0= ?BRA ; $10 BIND \ BPL r
+
 :NONAME ( BIT IMM    ) ; $89 BIND \ BIT #
 :NONAME ( BIT ABS    ) ; $2C BIND \ BIT a
 :NONAME ( BIT ABSX   ) ; $3C BIND \ BIT a,x
 :NONAME ( BIT ZP     ) ; $24 BIND \ BIT zp
 :NONAME ( BIT ZPX    ) ; $34 BIND \ BIT zp,x
-:NONAME ( BMI PCR    ) ; $30 BIND \ BMI r
-:NONAME ( BNE PCR    ) ; $D0 BIND \ BNE r
-:NONAME ( BPL PCR    ) ; $10 BIND \ BPL r
-:NONAME ( BRA PCR    ) ; $80 BIND \ BRA r
-:NONAME ( BRK STCK   ) ; $00 BIND \ BRK s
-:NONAME ( BVC PCR    ) ; $50 BIND \ BVC r
-:NONAME ( BVS PCR    ) ; $70 BIND \ BVS r
+
+:NONAME ( SEC IMPL   ) ; $38 BIND \ SEC i
+:NONAME ( SED IMPL   ) ; $F8 BIND \ SED i
+:NONAME ( SEI IMPL   ) ; $78 BIND \ SEI i
+
 :NONAME ( CLC IMPL   ) ; $18 BIND \ CLC i
 :NONAME ( CLD IMPL   ) ; $D8 BIND \ CLD i
 :NONAME ( CLI IMPL   ) ; $58 BIND \ CLI i
 :NONAME ( CLV IMPL   ) ; $B8 BIND \ CLV i
+
 :NONAME ( CMP INDX   ) ; $C1 BIND \ CMP (zp,x)
 :NONAME ( CMP ZIND   ) ; $D2 BIND \ CMP (zp)
 :NONAME ( CMP INDY   ) ; $D1 BIND \ CMP (zp),y
@@ -138,19 +132,33 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( CMP ABSY   ) ; $D9 BIND \ CMP a,y
 :NONAME ( CMP ZP     ) ; $C5 BIND \ CMP zp
 :NONAME ( CMP ZPX    ) ; $D5 BIND \ CMP zp,x
+
 :NONAME ( CPX IMM    ) ; $E0 BIND \ CPX #
 :NONAME ( CPX ABS    ) ; $EC BIND \ CPX a
 :NONAME ( CPX ZP     ) ; $E4 BIND \ CPX zp
+
 :NONAME ( CPY IMM    ) ; $C0 BIND \ CPY #
 :NONAME ( CPY ABS    ) ; $CC BIND \ CPY a
 :NONAME ( CPY ZP     ) ; $C4 BIND \ CPY zp
+
 :NONAME ( DEC ACC    ) ; $3A BIND \ DEC A
 :NONAME ( DEC ABS    ) ; $CE BIND \ DEC a
 :NONAME ( DEC ABSX   ) ; $DE BIND \ DEC a,x
 :NONAME ( DEC ZP     ) ; $C6 BIND \ DEC zp
 :NONAME ( DEC ZPX    ) ; $D6 BIND \ DEC zp,x
+
+:NONAME ( INC ACC    ) ; $1A BIND \ INC A
+:NONAME ( INC ABS    ) ; $EE BIND \ INC a
+:NONAME ( INC ABSX   ) ; $FE BIND \ INC a,x
+:NONAME ( INC ZP     ) ; $E6 BIND \ INC zp
+:NONAME ( INC ZPX    ) ; $F6 BIND \ INC zp,x
+
 :NONAME ( DEX IMPL   ) ; $CA BIND \ DEX i
 :NONAME ( DEY IMPL   ) ; $88 BIND \ DEY i
+
+:NONAME ( INX IMPL   ) ; $E8 BIND \ INX i
+:NONAME ( INY IMPL   ) ; $C8 BIND \ INY i
+
 :NONAME ( EOR INDX   ) ; $41 BIND \ EOR (zp,x)
 :NONAME ( EOR ZIND   ) ; $52 BIND \ EOR (zp)
 :NONAME ( EOR INDY   ) ; $51 BIND \ EOR (zp),y
@@ -160,13 +168,7 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( EOR ABSY   ) ; $59 BIND \ EOR a,y
 :NONAME ( EOR ZP     ) ; $45 BIND \ EOR zp
 :NONAME ( EOR ZPX    ) ; $55 BIND \ EOR zp,x
-:NONAME ( INC ACC    ) ; $1A BIND \ INC A
-:NONAME ( INC ABS    ) ; $EE BIND \ INC a
-:NONAME ( INC ABSX   ) ; $FE BIND \ INC a,x
-:NONAME ( INC ZP     ) ; $E6 BIND \ INC zp
-:NONAME ( INC ZPX    ) ; $F6 BIND \ INC zp,x
-:NONAME ( INX IMPL   ) ; $E8 BIND \ INX i
-:NONAME ( INY IMPL   ) ; $C8 BIND \ INY i
+
 :NONAME ( JMP AINDX  ) ; $7C BIND \ JMP (a,x)
 :NONAME ( JMP IND    ) ; $6C BIND \ JMP (a)
 :NONAME ( JMP ABS    ) ; $4C BIND \ JMP a
@@ -228,7 +230,9 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( LSR ABSX   ) ; $5E BIND \ LSR a,x
 :NONAME ( LSR ZP     ) ; $46 BIND \ LSR zp
 :NONAME ( LSR ZPX    ) ; $56 BIND \ LSR zp,x
+
 :NONAME ( NOP IMPL   ) ; $EA BIND \ NOP i
+
 :NONAME ( ORA INDX   ) ; $01 BIND \ ORA (zp,x)
 :NONAME ( ORA ZIND   ) ; $12 BIND \ ORA (zp)
 :NONAME ( ORA INDY   ) ; $11 BIND \ ORA (zp),y
@@ -238,6 +242,7 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( ORA ABSY   ) ; $19 BIND \ ORA a,y
 :NONAME ( ORA ZP     ) ; $05 BIND \ ORA zp
 :NONAME ( ORA ZPX    ) ; $15 BIND \ ORA zp,x
+
 :NONAME ( PHA STCK   ) ; $48 BIND \ PHA s
 :NONAME ( PHP STCK   ) ; $08 BIND \ PHP s
 :NONAME ( PHX STCK   ) ; $DA BIND \ PHX s
@@ -246,26 +251,22 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( PLP STCK   ) ; $28 BIND \ PLP s
 :NONAME ( PLX STCK   ) ; $FA BIND \ PLX s
 :NONAME ( PLY STCK   ) ; $7A BIND \ PLY s
-:NONAME ( RMB0 ZP    ) ; $07 BIND \ RMB0 zp
-:NONAME ( RMB1 ZP    ) ; $17 BIND \ RMB1 zp
-:NONAME ( RMB2 ZP    ) ; $27 BIND \ RMB2 zp
-:NONAME ( RMB3 ZP    ) ; $37 BIND \ RMB3 zp
-:NONAME ( RMB4 ZP    ) ; $47 BIND \ RMB4 zp
-:NONAME ( RMB5 ZP    ) ; $57 BIND \ RMB5 zp
-:NONAME ( RMB6 ZP    ) ; $67 BIND \ RMB6 zp
-:NONAME ( RMB7 ZP    ) ; $77 BIND \ RMB7 zp
+
 :NONAME ( ROL ACC    ) ; $2A BIND \ ROL A
 :NONAME ( ROL ABS    ) ; $2E BIND \ ROL a
 :NONAME ( ROL ABSX   ) ; $3E BIND \ ROL a,x
 :NONAME ( ROL ZP     ) ; $26 BIND \ ROL zp
 :NONAME ( ROL ZPX    ) ; $36 BIND \ ROL zp,x
+
 :NONAME ( ROR ACC    ) ; $6A BIND \ ROR A
 :NONAME ( ROR ABS    ) ; $6E BIND \ ROR a
 :NONAME ( ROR ABSX   ) ; $7E BIND \ ROR a,x
 :NONAME ( ROR ZP     ) ; $66 BIND \ ROR zp
 :NONAME ( ROR ZPX    ) ; $76 BIND \ ROR zp,x
+
 :NONAME ( RTI STCK   ) ; $40 BIND \ RTI s
 :NONAME ( RTS STCK   ) ; $60 BIND \ RTS s
+
 :NONAME ( SBC INDX   ) ; $E1 BIND \ SBC (zp,x)
 :NONAME ( SBC ZIND   ) ; $F2 BIND \ SBC (zp)
 :NONAME ( SBC INDY   ) ; $F1 BIND \ SBC (zp),y
@@ -275,22 +276,6 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( SBC ABSY   ) ; $F9 BIND \ SBC a,y
 :NONAME ( SBC ZP     ) ; $E5 BIND \ SBC zp
 :NONAME ( SBC ZPX    ) ; $F5 BIND \ SBC zp,x
-:NONAME ( SEC IMPL   ) ; $38 BIND \ SEC i
-:NONAME ( SED IMPL   ) ; $F8 BIND \ SED i
-:NONAME ( SEI IMPL   ) ; $78 BIND \ SEI i
-:NONAME ( SMB0 ZP    ) ; $87 BIND \ SMB0 zp
-:NONAME ( SMB1 ZP    ) ; $97 BIND \ SMB1 zp
-:NONAME ( SMB2 ZP    ) ; $A7 BIND \ SMB2 zp
-:NONAME ( SMB3 ZP    ) ; $B7 BIND \ SMB3 zp
-:NONAME ( SMB4 ZP    ) ; $C7 BIND \ SMB4 zp
-:NONAME ( SMB5 ZP    ) ; $D7 BIND \ SMB5 zp
-:NONAME ( SMB6 ZP    ) ; $E7 BIND \ SMB6 zp
-:NONAME ( SMB7 ZP    ) ; $F7 BIND \ SMB7 zp
-
-:NONAME ( STZ ABS    ) ; $9C BIND \ STZ a
-:NONAME ( STZ ABSX   ) ; $9E BIND \ STZ a,x
-:NONAME ( STZ ZP     ) ; $64 BIND \ STZ zp
-:NONAME ( STZ ZPX    ) ; $74 BIND \ STZ zp,x
 
 :NONAME ( TAX IMPL   ) ; $AA BIND \ TAX i
 :NONAME ( TAY IMPL   ) ; $A8 BIND \ TAY i
@@ -311,6 +296,40 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 
 :NONAME ( WAI IMPL   ) ; $CB BIND \ WAI i
 
+:NONAME ( SMB0 ZP    ) ; $87 BIND \ SMB0 zp
+:NONAME ( SMB1 ZP    ) ; $97 BIND \ SMB1 zp
+:NONAME ( SMB2 ZP    ) ; $A7 BIND \ SMB2 zp
+:NONAME ( SMB3 ZP    ) ; $B7 BIND \ SMB3 zp
+:NONAME ( SMB4 ZP    ) ; $C7 BIND \ SMB4 zp
+:NONAME ( SMB5 ZP    ) ; $D7 BIND \ SMB5 zp
+:NONAME ( SMB6 ZP    ) ; $E7 BIND \ SMB6 zp
+:NONAME ( SMB7 ZP    ) ; $F7 BIND \ SMB7 zp
+
+:NONAME ( RMB0 ZP    ) ; $07 BIND \ RMB0 zp
+:NONAME ( RMB1 ZP    ) ; $17 BIND \ RMB1 zp
+:NONAME ( RMB2 ZP    ) ; $27 BIND \ RMB2 zp
+:NONAME ( RMB3 ZP    ) ; $37 BIND \ RMB3 zp
+:NONAME ( RMB4 ZP    ) ; $47 BIND \ RMB4 zp
+:NONAME ( RMB5 ZP    ) ; $57 BIND \ RMB5 zp
+:NONAME ( RMB6 ZP    ) ; $67 BIND \ RMB6 zp
+:NONAME ( RMB7 ZP    ) ; $77 BIND \ RMB7 zp
+
+:NONAME ( BBR0 PCR   ) ; $0F BIND \ BBR0 r
+:NONAME ( BBR1 PCR   ) ; $1F BIND \ BBR1 r
+:NONAME ( BBR2 PCR   ) ; $2F BIND \ BBR2 r
+:NONAME ( BBR3 PCR   ) ; $3F BIND \ BBR3 r
+:NONAME ( BBR4 PCR   ) ; $4F BIND \ BBR4 r
+:NONAME ( BBR5 PCR   ) ; $5F BIND \ BBR5 r
+:NONAME ( BBR6 PCR   ) ; $6F BIND \ BBR6 r
+:NONAME ( BBR7 PCR   ) ; $7F BIND \ BBR7 r
+:NONAME ( BBS0 PCR   ) ; $8F BIND \ BBS0 r
+:NONAME ( BBS1 PCR   ) ; $9F BIND \ BBS1 r
+:NONAME ( BBS2 PCR   ) ; $AF BIND \ BBS2 r
+:NONAME ( BBS3 PCR   ) ; $BF BIND \ BBS3 r
+:NONAME ( BBS4 PCR   ) ; $CF BIND \ BBS4 r
+:NONAME ( BBS5 PCR   ) ; $DF BIND \ BBS5 r
+:NONAME ( BBS6 PCR   ) ; $EF BIND \ BBS6 r
+:NONAME ( BBS7 PCR   ) ; $FF BIND \ BBS7 r
 
 
 \ -- those have to be merged into the block above!
@@ -355,7 +374,15 @@ A9 _ FF _   \ 0000 LDA #$FF
 NEXT $FF T?A $80 T?P
 
 \ Test STA ABS
-0200 ORG
+$0200 ORG
 0 0222 TC!
 8D _ 22 _ 02 _  \ 0002 STA $0222
 NEXT 0222 FF T?MEM
+
+\ Test LDX, BNE, DEX
+\ $0200    a2 0a     LDX #$0a
+\ $0202    ca        DEX
+\ $0203    d0 fd     BNE $0202
+
+$0200 ORG
+A2 _ 0A _ CA _ D0 _ FD _

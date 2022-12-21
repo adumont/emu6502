@@ -280,16 +280,15 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( SBC ZP     ) ; $E5 BIND \ SBC zp
 :NONAME ( SBC ZPX    ) ; $F5 BIND \ SBC zp,x
 
-:NONAME ( TAX IMPL   ) ; $AA BIND \ TAX i
-:NONAME ( TAY IMPL   ) ; $A8 BIND \ TAY i
+:NONAME ( TAX IMPL   ) _A  C@   >NZ   _X  C! ; $AA BIND \ TAX i
+:NONAME ( TXA IMPL   ) _X  C@   >NZ   _A  C! ; $8A BIND \ TXA i
 
-:NONAME ( TSX IMPL   ) ; $BA BIND \ TSX i
-:NONAME ( TXA IMPL   ) ; $8A BIND \ TXA i
+:NONAME ( TAY IMPL   ) _A  C@   >NZ   _Y  C! ; $A8 BIND \ TAY i
+:NONAME ( TYA IMPL   ) _Y  C@   >NZ   _A  C! ; $98 BIND \ TYA i
 
-:NONAME ( TXS IMPL   ) ; $9A BIND \ TXS i
-:NONAME ( TYA IMPL   ) ; $98 BIND \ TYA i
+:NONAME ( TSX IMPL   ) _SP C@   >NZ   _X  C! ; $BA BIND \ TSX i
+:NONAME ( TXS IMPL   ) _X  C@         _SP C! ; $9A BIND \ TXS i
 
-:NONAME ( STP IMPL   ) ; $DB BIND \ STP i
 
 :NONAME ( TRB ABS    ) ; $1C BIND \ TRB a
 :NONAME ( TRB ZP     ) ; $14 BIND \ TRB zp
@@ -297,6 +296,7 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( TSB ABS    ) ; $0C BIND \ TSB a
 :NONAME ( TSB ZP     ) ; $04 BIND \ TSB zp
 
+:NONAME ( STP IMPL   ) ; $DB BIND \ STP i
 :NONAME ( WAI IMPL   ) ; $CB BIND \ WAI i
 
 :NONAME ( SMB0 ZP    ) ; $87 BIND \ SMB0 zp
@@ -333,17 +333,6 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( BBS5 PCR   ) ; $DF BIND \ BBS5 r
 :NONAME ( BBS6 PCR   ) ; $EF BIND \ BBS6 r
 :NONAME ( BBS7 PCR   ) ; $FF BIND \ BBS7 r
-
-
-\ -- those have to be merged into the block above!
-
-:NONAME ( TAX   ) _A  C@   >NZ   _X  C! ; $AA BIND
-:NONAME ( TXA   ) _X  C@   >NZ   _A  C! ; $8A BIND
-:NONAME ( TAY   ) _A  C@   >NZ   _Y  C! ; $A8 BIND
-:NONAME ( TYA   ) _Y  C@   >NZ   _A  C! ; $98 BIND
-
-:NONAME ( TSX   ) _SP C@   >NZ   _X  C! ; $BA BIND
-:NONAME ( TXS   ) _X  C@         _SP C! ; $9A BIND
 
 : INCR ( reg -- ) DUP C@ 1+   >NZ  SWAP C! ; \ no need to $FF MOD as we store with C!
 

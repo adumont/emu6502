@@ -5,6 +5,7 @@
 \ At the moment, host Forth is AlexFORTH on 6502
 \ Target CPU is 65C02 variant
 
+: C? C@ C. ;
 
 HEX
 

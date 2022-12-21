@@ -36,9 +36,11 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
   _PC @ DUP 2+ _PC ! T@
 ;
 
+: DUMPPC _PC @ DUP 3 + SWAP DO I TC@ C. LOOP ;
+
 : STATUS
-  .( A:) _A C@ C. .( X:) _X C@ C. .( Y:) _Y C@ C.
-  .( P:) _P C@ C. .( SP:) _SP C@ C. .( PC:) _PC @ . CR ;
+  .( A:) _A C? .( X:) _X C? .( Y:) _Y C?
+  .( P:) _P C? .( SP:) _SP C? .( PC:) _PC ? .( > ) DUMPPC CR ;
 
 : NEXT
   ( FETCH   ) BYTE@
@@ -356,11 +358,11 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 
 \ TESTS
 : T?= ( a b -- )    = 0= IF CR .( ** ERROR ** ) CR CR THEN ;
-: T?A ( b -- )      _A C@ T= ;
-: T?X ( b -- )      _X C@ T= ;
-: T?Y ( b -- )      _Y C@ T= ;
-: T?P ( b -- )      _P C@ T= ;
-: T?MEM ( addr b -- )  SWAP TC@ T= ;
+: T?A ( b -- )      _A C@ T?= ;
+: T?X ( b -- )      _X C@ T?= ;
+: T?Y ( b -- )      _Y C@ T?= ;
+: T?P ( b -- )      _P C@ T?= ;
+: T?MEM ( addr b -- )  SWAP TC@ T?= ;
 
 \-- store a minimal program
 

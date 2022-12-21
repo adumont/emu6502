@@ -61,13 +61,14 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 : SET   ( mask -- )     _P C@ OR  _P C! ;
 : UPDATE-FLAG ( b/f reg -- ) SWAP IF SET ELSE CLEAR THEN ;
 
-: >N ( b -- b ) DUP 'N AND 'N UPDATE-FLAG ;
-: >Z ( b -- b ) DUP     0= 'Z UPDATE-FLAG ;
-: >D ( f -- f ) DUP        'D UPDATE-FLAG ;
-: >V ( f -- f ) DUP        'V UPDATE-FLAG ;
-: >C ( f -- f ) DUP        'C UPDATE-FLAG ;
-
 :NONAME ( BRK   ) .( BRK) CR ; $00 BIND
+: >NZ  \ always updated together
+( >N ) ( b -- b ) DUP 'N AND 'N UPDATE-FLAG
+( >Z ) ( b -- b ) DUP     0= 'Z UPDATE-FLAG ;
+: >Z   ( b -- b ) DUP     0= 'Z UPDATE-FLAG ;
+: >D   ( f -- f ) DUP        'D UPDATE-FLAG ;
+: >V   ( f -- f ) DUP        'V UPDATE-FLAG ;
+: >C   ( f -- f ) DUP        'C UPDATE-FLAG ;
 
 \ -- boilerplate opcodes definitions to be defined
 :NONAME ( ADC INDX   ) ; $61 BIND \ ADC (zp,x)
@@ -171,7 +172,7 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( JMP ABS    ) ; $4C BIND \ JMP a
 :NONAME ( JSR ABS    ) ; $20 BIND \ JSR a
 
-: LDA ( b -- ) >N >Z _A C! ;
+: LDA ( b -- ) >NZ _A C! ;
 :NONAME ( LDA IMM    ) BYTE@                        LDA ; $A9 BIND \ LDA #
 :NONAME ( LDA ZP     ) BYTE@                    TC@ LDA ; $A5 BIND \ LDA zp
 :NONAME ( LDA ABS    ) WORD@                    TC@ LDA ; $AD BIND \ LDA a
@@ -198,7 +199,7 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( STZ ZP     ) BYTE@                        STZ ; $64 BIND \ STZ zp
 :NONAME ( STZ ZPX    ) BYTE@ _X C@ + $FF AND        STZ ; $74 BIND \ STZ zp,x
 
-: LDX ( b -- ) >N >Z _X C! ;
+: LDX ( b -- ) >NZ _X C! ;
 :NONAME ( LDX IMM    ) BYTE@                        LDX ; $A2 BIND \ LDX #
 :NONAME ( LDX ZP     ) BYTE@                    TC@ LDX ; $A6 BIND \ LDX zp
 :NONAME ( LDX ABS    ) WORD@                    TC@ LDX ; $AE BIND \ LDX a
@@ -210,7 +211,7 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( STX ZP     ) BYTE@                        STX ; $86 BIND \ STX zp
 :NONAME ( STX ZPY    ) BYTE@ _Y C@ + $FF AND        STX ; $96 BIND \ STX zp,y
 
-: LDY ( b -- ) >N >Z _Y C! ;
+: LDY ( b -- ) >NZ _Y C! ;
 :NONAME ( LDY IMM    ) BYTE@                        LDY ; $A0 BIND \ LDY #
 :NONAME ( LDY ZP     ) BYTE@                    TC@ LDY ; $A4 BIND \ LDY zp
 :NONAME ( LDY ABS    ) WORD@                    TC@ LDY ; $AC BIND \ LDY a
@@ -314,21 +315,21 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 
 \ -- those have to be merged into the block above!
 
-:NONAME ( TAX   ) _A  C@   >N >Z   _X  C! ; $AA BIND
-:NONAME ( TXA   ) _X  C@   >N >Z   _A  C! ; $8A BIND
-:NONAME ( TAY   ) _A  C@   >N >Z   _Y  C! ; $A8 BIND
-:NONAME ( TYA   ) _Y  C@   >N >Z   _A  C! ; $98 BIND
+:NONAME ( TAX   ) _A  C@   >NZ   _X  C! ; $AA BIND
+:NONAME ( TXA   ) _X  C@   >NZ   _A  C! ; $8A BIND
+:NONAME ( TAY   ) _A  C@   >NZ   _Y  C! ; $A8 BIND
+:NONAME ( TYA   ) _Y  C@   >NZ   _A  C! ; $98 BIND
 
-:NONAME ( TSX   ) _SP C@   >N >Z   _X  C! ; $BA BIND
-:NONAME ( TXS   ) _X  C@           _SP C! ; $9A BIND
+:NONAME ( TSX   ) _SP C@   >NZ   _X  C! ; $BA BIND
+:NONAME ( TXS   ) _X  C@         _SP C! ; $9A BIND
 
-: INCR ( reg -- ) DUP C@ 1+  SWAP C! ; \ no need to $FF MOD as we store with C!
+: INCR ( reg -- ) DUP C@ 1+   >NZ  SWAP C! ; \ no need to $FF MOD as we store with C!
 
 :NONAME ( INC A ) _A INCR ; $1A BIND
 :NONAME ( INX   ) _X INCR ; $E8 BIND
 :NONAME ( INY   ) _Y INCR ; $C8 BIND
 
-: DECR ( reg -- ) DUP C@ 1 - SWAP C! ;
+: DECR ( reg -- ) DUP C@ 1 -  >NZ  SWAP C! ; \ no need to $FF MOD as we store with C!
 
 :NONAME ( DEC A ) _A DECR ; $3A BIND
 :NONAME ( DEX   ) _X DECR ; $CA BIND

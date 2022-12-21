@@ -144,23 +144,27 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( CPY ABS    ) ; $CC BIND \ CPY a
 :NONAME ( CPY ZP     ) ; $C4 BIND \ CPY zp
 
-:NONAME ( DEC ACC    ) ; $3A BIND \ DEC A
-:NONAME ( DEC ABS    ) ; $CE BIND \ DEC a
-:NONAME ( DEC ABSX   ) ; $DE BIND \ DEC a,x
-:NONAME ( DEC ZP     ) ; $C6 BIND \ DEC zp
-:NONAME ( DEC ZPX    ) ; $D6 BIND \ DEC zp,x
+: INCR ( reg -- ) DUP C@ 1+   >NZ  SWAP C! ; \ no need to $FF MOD as we store with C!
 
-:NONAME ( INC ACC    ) ; $1A BIND \ INC A
-:NONAME ( INC ABS    ) ; $EE BIND \ INC a
-:NONAME ( INC ABSX   ) ; $FE BIND \ INC a,x
-:NONAME ( INC ZP     ) ; $E6 BIND \ INC zp
-:NONAME ( INC ZPX    ) ; $F6 BIND \ INC zp,x
+:NONAME ( INC ACC    ) _A INCR ; $1A BIND \ INC A
+:NONAME ( INX IMPL   ) _X INCR ; $E8 BIND \ INX i
+:NONAME ( INY IMPL   ) _Y INCR ; $C8 BIND \ INY i
 
-:NONAME ( DEX IMPL   ) ; $CA BIND \ DEX i
-:NONAME ( DEY IMPL   ) ; $88 BIND \ DEY i
+:NONAME ( INC ABS    ) WORD@         DUP TC@ 1+ SWAP TC! ; $EE BIND \ INC a
+:NONAME ( INC ABSX   ) WORD@ _X C@ + DUP TC@ 1+ SWAP TC! ; $FE BIND \ INC a,x
+:NONAME ( INC ZP     ) BYTE@         DUP TC@ 1+ SWAP TC! ; $E6 BIND \ INC zp
+:NONAME ( INC ZPX    ) BYTE@ _X C@ + DUP TC@ 1+ SWAP TC! ; $F6 BIND \ INC zp,x
 
-:NONAME ( INX IMPL   ) ; $E8 BIND \ INX i
-:NONAME ( INY IMPL   ) ; $C8 BIND \ INY i
+: DECR ( reg -- ) DUP C@ 1 -  >NZ  SWAP C! ; \ no need to $FF MOD as we store with C!
+
+:NONAME ( DEC ACC    ) _A DECR ; $3A BIND \ DEC A
+:NONAME ( DEX IMPL   ) _X DECR ; $CA BIND \ DEX i
+:NONAME ( DEY IMPL   ) _Y DECR ; $88 BIND \ DEY i
+
+:NONAME ( DEC ABS    ) WORD@         DUP TC@ 1 - SWAP TC! ; $CE BIND \ DEC a
+:NONAME ( DEC ABSX   ) WORD@ _X C@ + DUP TC@ 1 - SWAP TC! ; $DE BIND \ DEC a,x
+:NONAME ( DEC ZP     ) BYTE@         DUP TC@ 1 - SWAP TC! ; $C6 BIND \ DEC zp
+:NONAME ( DEC ZPX    ) BYTE@ _X C@ + DUP TC@ 1 - SWAP TC! ; $D6 BIND \ DEC zp,x
 
 :NONAME ( EOR INDX   ) ; $41 BIND \ EOR (zp,x)
 :NONAME ( EOR ZIND   ) ; $52 BIND \ EOR (zp)
@@ -333,18 +337,6 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( BBS5 PCR   ) ; $DF BIND \ BBS5 r
 :NONAME ( BBS6 PCR   ) ; $EF BIND \ BBS6 r
 :NONAME ( BBS7 PCR   ) ; $FF BIND \ BBS7 r
-
-: INCR ( reg -- ) DUP C@ 1+   >NZ  SWAP C! ; \ no need to $FF MOD as we store with C!
-
-:NONAME ( INC A ) _A INCR ; $1A BIND
-:NONAME ( INX   ) _X INCR ; $E8 BIND
-:NONAME ( INY   ) _Y INCR ; $C8 BIND
-
-: DECR ( reg -- ) DUP C@ 1 -  >NZ  SWAP C! ; \ no need to $FF MOD as we store with C!
-
-:NONAME ( DEC A ) _A DECR ; $3A BIND
-:NONAME ( DEX   ) _X DECR ; $CA BIND
-:NONAME ( DEY   ) _Y DECR ; $88 BIND
 
 \ TESTS
 : T?= ( a b -- )    = 0= IF CR .( ** ERROR ** ) CR CR THEN ;

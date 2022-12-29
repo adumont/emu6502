@@ -72,6 +72,27 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 : >V   ( f -- f ) DUP        'V UPDATE-FLAG ;
 : >C   ( f -- f ) DUP        'C UPDATE-FLAG ;
 
+
+\ 65C02 Addressing Modes
+
+\ Mode   Id    Mode   Len 65c02  Mode Descr
+\ ABS     0    a       3         Absolute a
+\ AINDX   1    (a,x)   3    *    Absolute Indexed Indirect (a,x)
+\ ABSX    2    a,x     3         Absolute Indexed with X a,x
+\ ABSY    3    a,y     3         Absolute Indexed with Y a,y
+\ IND     4    (a)     3         Absolute Indirect (a)
+\ ACC     5    A       1         Accumulator A
+\ IMM     6    #       2         Immediate Addressing #
+\ IMPL    7    i       1         Implied i
+\ PCR     8    r       2         Program Counter Relative r
+\ STCK    9    s       1         Stack s
+\ ZP     10    zp      2         Zero Page zp
+\ INDX   11    (zp,x)  2         Zero Page Indexed Indirect (zp,x)
+\ ZPX    12    zp,x    2         Zero Page Indexed with X zp,x
+\ ZPY    13    zp,y    2         Zero Page Indexed with Y zp,y
+\ ZIND   14    (zp)    2    *    Zero Page Indirect (zp)
+\ INDY   15    (zp),y  2         Zero Page Indirect Indexed with Y (zp), y
+
 \ -- boilerplate opcodes definitions to be defined
 
 :NONAME ( BRK STCK   ) .( BRK) CR ; $00 BIND \ BRK s

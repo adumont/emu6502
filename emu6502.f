@@ -238,56 +238,67 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 \ :NONAME ( RTI STCK   ) ; $40 BIND \ RTI s
 \ :NONAME ( RTS STCK   ) ; $60 BIND \ RTS s
 
+\ Addressing modes words
+: 'ZP   ( -- addr ) BYTE@ ;                     \ Zero Page zp
+: 'ABS  ( -- addr ) WORD@ ;                     \ Absolute a
+: 'ABSX ( -- addr ) WORD@ _X C@ + ;             \ Absolute Indexed with X a,x
+: 'ABSY ( -- addr ) WORD@ _Y C@ + ;             \ Absolute Indexed with Y a,y
+: 'ZPX  ( -- addr ) BYTE@ _X C@ + $FF AND ;     \ Zero Page Indexed with X zp,x
+: 'ZPY  ( -- addr ) BYTE@ _Y C@ + $FF AND ;     \ Zero Page Indexed with Y zp,y
+: 'INDX ( -- addr ) BYTE@ _X C@ + $FF AND T@ ;  \ Zero Page Indexed Indirect (zp,x)
+: 'ZIND ( -- addr ) BYTE@ T@ ;                  \ Zero Page Indirect (zp)
+: 'INDY ( -- addr ) BYTE@ T@ _Y C@ + ;          \ Zero Page Indirect Indexed with Y (zp), y
+
 : LDA ( b -- ) >NZ _A C! ;
-:NONAME ( LDA IMM    ) BYTE@                        LDA ; $A9 BIND \ LDA #
-:NONAME ( LDA ZP     ) BYTE@                    TC@ LDA ; $A5 BIND \ LDA zp
-:NONAME ( LDA ABS    ) WORD@                    TC@ LDA ; $AD BIND \ LDA a
-:NONAME ( LDA ABSX   ) WORD@ _X C@ +            TC@ LDA ; $BD BIND \ LDA a,x
-:NONAME ( LDA ABSY   ) WORD@ _Y C@ +            TC@ LDA ; $B9 BIND \ LDA a,y
-:NONAME ( LDA ZPX    ) BYTE@ _X C@ + $FF AND    TC@ LDA ; $B5 BIND \ LDA zp,x
-:NONAME ( LDA INDX   ) BYTE@ _X C@ + $FF AND T@ TC@ LDA ; $A1 BIND \ LDA (zp,x)         ( FACTOR!! )
-:NONAME ( LDA ZIND   ) BYTE@ T@                 TC@ LDA ; $B2 BIND \ LDA (zp)
-:NONAME ( LDA INDY   ) BYTE@ T@ _Y C@ +         TC@ LDA ; $B1 BIND \ LDA (zp),y
+:NONAME ( LDA IMM    ) BYTE@      LDA ; $A9 BIND \ LDA #
+:NONAME ( LDA ZP     ) 'ZP    TC@ LDA ; $A5 BIND \ LDA zp
+:NONAME ( LDA ABS    ) 'ABS   TC@ LDA ; $AD BIND \ LDA a
+:NONAME ( LDA ABSX   ) 'ABSX  TC@ LDA ; $BD BIND \ LDA a,x
+:NONAME ( LDA ABSY   ) 'ABSY  TC@ LDA ; $B9 BIND \ LDA a,y
+:NONAME ( LDA ZPX    ) 'ZPX   TC@ LDA ; $B5 BIND \ LDA zp,x
+:NONAME ( LDA INDX   ) 'INDX  TC@ LDA ; $A1 BIND \ LDA (zp,x)
+:NONAME ( LDA ZIND   ) 'ZIND  TC@ LDA ; $B2 BIND \ LDA (zp)
+:NONAME ( LDA INDY   ) 'INDY  TC@ LDA ; $B1 BIND \ LDA (zp),y
 
 : STA ( addr -- ) _A C@ SWAP TC! ;
-:NONAME ( STA ABS    ) WORD@                        STA ; $8D BIND \ STA a
-:NONAME ( STA ZP     ) BYTE@                        STA ; $85 BIND \ STA zp
-:NONAME ( STA ZPX    ) BYTE@ _X C@ + $FF AND        STA ; $95 BIND \ STA zp,x
-:NONAME ( STA ABSX   ) WORD@ _X C@ +                STA ; $9D BIND \ STA a,x
-:NONAME ( STA ABSY   ) WORD@ _Y C@ +                STA ; $99 BIND \ STA a,y
-:NONAME ( STA INDX   ) BYTE@ _X C@ + $FF AND T@     STA ; $81 BIND \ STA (zp,x)
-:NONAME ( STA ZIND   ) BYTE@ T@                     STA ; $92 BIND \ STA (zp)
-:NONAME ( STA INDY   ) BYTE@ T@ _Y C@ +             STA ; $91 BIND \ STA (zp),y
+:NONAME ( STA ABS    ) 'ABS       STA ; $8D BIND \ STA a
+:NONAME ( STA ZP     ) 'ZP        STA ; $85 BIND \ STA zp
+:NONAME ( STA ZPX    ) 'ZPX       STA ; $95 BIND \ STA zp,x
+:NONAME ( STA ABSX   ) 'ABSX      STA ; $9D BIND \ STA a,x
+:NONAME ( STA ABSY   ) 'ABSY      STA ; $99 BIND \ STA a,y
+:NONAME ( STA INDX   ) 'INDX      STA ; $81 BIND \ STA (zp,x)
+:NONAME ( STA ZIND   ) 'ZIND      STA ; $92 BIND \ STA (zp)
+:NONAME ( STA INDY   ) 'INDY      STA ; $91 BIND \ STA (zp),y
 
 : STZ ( addr -- ) 0 SWAP TC! ;
-:NONAME ( STZ ABS    ) WORD@                        STZ ; $9C BIND \ STZ a
-:NONAME ( STZ ABSX   ) WORD@ _X C@ +                STZ ; $9E BIND \ STZ a,x
-:NONAME ( STZ ZP     ) BYTE@                        STZ ; $64 BIND \ STZ zp
-:NONAME ( STZ ZPX    ) BYTE@ _X C@ + $FF AND        STZ ; $74 BIND \ STZ zp,x
+:NONAME ( STZ ABS    ) 'ABS       STZ ; $9C BIND \ STZ a
+:NONAME ( STZ ABSX   ) 'ABSX      STZ ; $9E BIND \ STZ a,x
+:NONAME ( STZ ZP     ) 'ZP        STZ ; $64 BIND \ STZ zp
+:NONAME ( STZ ZPX    ) 'ZPX       STZ ; $74 BIND \ STZ zp,x
 
 : LDX ( b -- ) >NZ _X C! ;
-:NONAME ( LDX IMM    ) BYTE@                        LDX ; $A2 BIND \ LDX #
-:NONAME ( LDX ZP     ) BYTE@                    TC@ LDX ; $A6 BIND \ LDX zp
-:NONAME ( LDX ABS    ) WORD@                    TC@ LDX ; $AE BIND \ LDX a
-:NONAME ( LDX ABSY   ) WORD@ _Y C@ +            TC@ LDX ; $BE BIND \ LDX a,y
-:NONAME ( LDX ZPY    ) BYTE@ _Y C@ + $FF AND    TC@ LDA ; $B6 BIND \ LDX zp,y
+:NONAME ( LDX IMM    ) BYTE@      LDX ; $A2 BIND \ LDX #
+:NONAME ( LDX ZP     ) 'ZP    TC@ LDX ; $A6 BIND \ LDX zp
+:NONAME ( LDX ABS    ) 'ABS   TC@ LDX ; $AE BIND \ LDX a
+:NONAME ( LDX ABSY   ) 'ABSY  TC@ LDX ; $BE BIND \ LDX a,y
+:NONAME ( LDX ZPY    ) 'ZPY   TC@ LDA ; $B6 BIND \ LDX zp,y
 
 : STX ( addr -- ) _X C@ SWAP TC! ;
-:NONAME ( STX ABS    ) WORD@                        STX ; $8E BIND \ STX a
-:NONAME ( STX ZP     ) BYTE@                        STX ; $86 BIND \ STX zp
-:NONAME ( STX ZPY    ) BYTE@ _Y C@ + $FF AND        STX ; $96 BIND \ STX zp,y
+:NONAME ( STX ABS    ) 'ABS       STX ; $8E BIND \ STX a
+:NONAME ( STX ZP     ) 'ZP        STX ; $86 BIND \ STX zp
+:NONAME ( STX ZPY    ) 'ZPY       STX ; $96 BIND \ STX zp,y
 
 : LDY ( b -- ) >NZ _Y C! ;
 :NONAME ( LDY IMM    ) BYTE@                        LDY ; $A0 BIND \ LDY #
-:NONAME ( LDY ZP     ) BYTE@                    TC@ LDY ; $A4 BIND \ LDY zp
-:NONAME ( LDY ABS    ) WORD@                    TC@ LDY ; $AC BIND \ LDY a
-:NONAME ( LDY ABSX   ) WORD@ _X C@ +            TC@ LDY ; $BC BIND \ LDY a,x
-:NONAME ( LDY ZPX    ) BYTE@ _X C@ + $FF AND    TC@ LDY ; $B4 BIND \ LDY zp,x
+:NONAME ( LDY ZP     ) 'ZP    TC@ LDY ; $A4 BIND \ LDY zp
+:NONAME ( LDY ABS    ) 'ABS   TC@ LDY ; $AC BIND \ LDY a
+:NONAME ( LDY ABSX   ) 'ABSX  TC@ LDY ; $BC BIND \ LDY a,x
+:NONAME ( LDY ZPX    ) 'ZPX   TC@ LDY ; $B4 BIND \ LDY zp,x
 
 : STY ( addr -- ) _X C@ SWAP TC! ;
-:NONAME ( STY ABS    ) WORD@                        STY ; $8C BIND \ STY a
-:NONAME ( STY ZP     ) BYTE@                        STY ; $84 BIND \ STY zp
-:NONAME ( STY ZPX    ) BYTE@ _X C@ + $FF AND        STY ; $94 BIND \ STY zp,x
+:NONAME ( STY ABS    ) 'ABS       STY ; $8C BIND \ STY a
+:NONAME ( STY ZP     ) 'ZP        STY ; $84 BIND \ STY zp
+:NONAME ( STY ZPX    ) 'ZPX       STY ; $94 BIND \ STY zp,x
 
 \ :NONAME ( LSR ACC    ) ; $4A BIND \ LSR A
 \ :NONAME ( LSR ABS    ) ; $4E BIND \ LSR a

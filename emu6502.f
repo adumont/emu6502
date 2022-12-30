@@ -26,7 +26,7 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 : T@  ( addr -- word )
   DUP TC@       \ LO
   SWAP 1+ TC@   \ HI
-  SWAP $100 * + \ LO HI --> HILO
+  $100 * + \ LO HI --> HILO
 ;
 
 0000 VALUE THERE \ Target HERE

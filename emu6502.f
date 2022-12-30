@@ -219,16 +219,6 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( DEC ZP     ) BYTE@         DUP TC@ 1 - SWAP TC! ; $C6 BIND \ DEC zp
 :NONAME ( DEC ZPX    ) BYTE@ _X C@ + DUP TC@ 1 - SWAP TC! ; $D6 BIND \ DEC zp,x
 
-\ :NONAME ( EOR INDX   ) ; $41 BIND \ EOR (zp,x)
-\ :NONAME ( EOR ZIND   ) ; $52 BIND \ EOR (zp)
-\ :NONAME ( EOR INDY   ) ; $51 BIND \ EOR (zp),y
-\ :NONAME ( EOR IMM    ) ; $49 BIND \ EOR #
-\ :NONAME ( EOR ABS    ) ; $4D BIND \ EOR a
-\ :NONAME ( EOR ABSX   ) ; $5D BIND \ EOR a,x
-\ :NONAME ( EOR ABSY   ) ; $59 BIND \ EOR a,y
-\ :NONAME ( EOR ZP     ) ; $45 BIND \ EOR zp
-\ :NONAME ( EOR ZPX    ) ; $55 BIND \ EOR zp,x
-
 :NONAME ( JMP ABS    ) WORD@            _PC! ; $4C BIND \ JMP a
 :NONAME ( JMP IND    ) WORD@         T@ _PC! ; $6C BIND \ JMP (a)
 :NONAME ( JMP AINDX  ) WORD@ _X C@ + T@ _PC! ; $7C BIND \ JMP (a,x)
@@ -299,6 +289,17 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( STY ABS    ) 'ABS       STY ; $8C BIND \ STY a
 :NONAME ( STY ZP     ) 'ZP        STY ; $84 BIND \ STY zp
 :NONAME ( STY ZPX    ) 'ZPX       STY ; $94 BIND \ STY zp,x
+
+: EOR ( b -- ) _A C@ XOR LDA ;
+:NONAME ( EOR IMM    ) BYTE@      EOR ; $49 BIND \ EOR #
+:NONAME ( EOR ABS    ) 'ABS   TC@ EOR ; $4D BIND \ EOR a
+:NONAME ( EOR ABSX   ) 'ABSX  TC@ EOR ; $5D BIND \ EOR a,x
+:NONAME ( EOR ABSY   ) 'ABSY  TC@ EOR ; $59 BIND \ EOR a,y
+:NONAME ( EOR ZP     ) 'ZP    TC@ EOR ; $45 BIND \ EOR zp
+:NONAME ( EOR ZPX    ) 'ZPX   TC@ EOR ; $55 BIND \ EOR zp,x
+:NONAME ( EOR ZIND   ) 'ZIND  TC@ EOR ; $52 BIND \ EOR (zp)
+:NONAME ( EOR INDX   ) 'INDX  TC@ EOR ; $41 BIND \ EOR (zp,x)
+:NONAME ( EOR INDY   ) 'INDY  TC@ EOR ; $51 BIND \ EOR (zp),y
 
 \ :NONAME ( LSR ACC    ) ; $4A BIND \ LSR A
 \ :NONAME ( LSR ABS    ) ; $4E BIND \ LSR a

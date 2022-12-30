@@ -9,6 +9,18 @@ HEX
 
 2 CONSTANT CELL
 
+\ Some compatibility words for gforth
+\ still need to change .( ) into ." "
+
+\ 8 CONSTANT CELL
+\ : print_nibble $F AND DUP $A >= IF $67 + THEN $30 XOR EMIT ;
+\ : C. $FF AND $10 /MOD print_nibble print_nibble ;
+\ : GETC BEGIN KEY? UNTIL KEY ;
+\ : 2+ 1+ 1+ ;
+\ : EXEC EXECUTE ;
+\ : NOT $FFFF XOR ;
+\ : NEG 0 SWAP - ;
+
 : C? C@ C. ;
 : CELLS CELL * ;
 

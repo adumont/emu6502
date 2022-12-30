@@ -138,15 +138,7 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 \ :NONAME ( ADC ABSY   ) ; $79 BIND \ ADC a,y
 \ :NONAME ( ADC ZP     ) ; $65 BIND \ ADC zp
 \ :NONAME ( ADC ZPX    ) ; $75 BIND \ ADC zp,x
-\ :NONAME ( AND INDX   ) ; $21 BIND \ AND (zp,x)
-\ :NONAME ( AND ZIND   ) ; $32 BIND \ AND (zp)
-\ :NONAME ( AND INDY   ) ; $31 BIND \ AND (zp),y
-\ :NONAME ( AND IMM    ) ; $29 BIND \ AND #
-\ :NONAME ( AND ABS    ) ; $2D BIND \ AND a
-\ :NONAME ( AND ABSX   ) ; $3D BIND \ AND a,x
-\ :NONAME ( AND ABSY   ) ; $39 BIND \ AND a,y
-\ :NONAME ( AND ZP     ) ; $25 BIND \ AND zp
-\ :NONAME ( AND ZPX    ) ; $35 BIND \ AND zp,x
+
 \ :NONAME ( ASL ACC    ) ; $0A BIND \ ASL A
 \ :NONAME ( ASL ABS    ) ; $0E BIND \ ASL a
 \ :NONAME ( ASL ABSX   ) ; $1E BIND \ ASL a,x
@@ -311,6 +303,17 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( ORA ZIND   ) 'ZIND  TC@ ORA ; $12 BIND \ ORA (zp)
 :NONAME ( ORA INDX   ) 'INDX  TC@ ORA ; $01 BIND \ ORA (zp,x)
 :NONAME ( ORA INDY   ) 'INDY  TC@ ORA ; $11 BIND \ ORA (zp),y
+
+: _AND ( b -- ) _A C@ AND LDA ;
+:NONAME ( AND IMM    ) BYTE@      _AND ; $29 BIND \ AND #
+:NONAME ( AND ABS    ) 'ABS   TC@ _AND ; $2D BIND \ AND a
+:NONAME ( AND ABSX   ) 'ABSX  TC@ _AND ; $3D BIND \ AND a,x
+:NONAME ( AND ABSY   ) 'ABSY  TC@ _AND ; $39 BIND \ AND a,y
+:NONAME ( AND ZP     ) 'ZP    TC@ _AND ; $25 BIND \ AND zp
+:NONAME ( AND ZPX    ) 'ZPX   TC@ _AND ; $35 BIND \ AND zp,x
+:NONAME ( AND ZIND   ) 'ZIND  TC@ _AND ; $32 BIND \ AND (zp)
+:NONAME ( AND INDX   ) 'INDX  TC@ _AND ; $21 BIND \ AND (zp,x)
+:NONAME ( AND INDY   ) 'INDY  TC@ _AND ; $31 BIND \ AND (zp),y
 
 \ :NONAME ( LSR ACC    ) ; $4A BIND \ LSR A
 \ :NONAME ( LSR ABS    ) ; $4E BIND \ LSR a

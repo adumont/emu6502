@@ -424,9 +424,10 @@ NEXT 0222 FF T?MEM
 \ A2 _ 0A _ CA _ D0 _ FD _
 
 \ Test IO
-\ $0200    ad fe 02  LDA $02fe
-\ $0203    8d ff 02  STA $02ff
-\ $0206    d0 f8     BNE $0600
+\ AD FE 02  LDA $02fe
+\ 1A        INC A
+\ 8d ff 02  STA $02ff
+\ d0 f8     BNE $0600
 
 $0200 ORG
-AD _ FE _ 02 _ 8D _ FF _ 02 _ D0 _ F8 _
+AD _ FE _ 02 _ 1A _ 8D _ FF _ 02 _ D0 _ F7 _

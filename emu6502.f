@@ -5,14 +5,17 @@
 \ At the moment, host Forth is AlexFORTH on 6502
 \ Target CPU is 65C02 variant
 
-: C? C@ C. ;
-
 HEX
+
+2 CONSTANT CELL
+
+: C? C@ C. ;
+: CELLS CELL * ;
 
 CREATE _A  0 C,   CREATE _X  0 C,   CREATE _Y  0 C,
 CREATE _SP 0 C,   CREATE _PC 0  ,   CREATE _P  0 C,
 
-CREATE OPCODES #512 ALLOT
+CREATE OPCODES #256 CELLS ALLOT
 CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 \ 0000-00FF ZP
 \ 0100-01FF 6502 Stack
@@ -54,7 +57,7 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 
 : NEXT
   ( FETCH   ) BYTE@
-  ( DECODE  ) 2* OPCODES + @
+  ( DECODE  ) CELLS OPCODES + @
   ( EXECUTE ) EXEC
   TRACE IF STATUS THEN ;
 
@@ -64,7 +67,7 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
   ( n ) 0 DO NEXT LOOP
   R> TO TRACE ; \ restore TRACE
 
-: BIND ( xt opcode -- )   2* OPCODES + ! ; \ saves XT in OPCODES table
+: BIND ( xt opcode -- )   CELLS OPCODES + ! ; \ saves XT in OPCODES table
 
 \ -- Processor Flags handling
 %10000000 VALUE 'N

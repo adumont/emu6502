@@ -49,14 +49,16 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 
 \ -- PC --
 
+: _PC! $FFFF AND _PC ! ;
+
 \ Fetch a BYTE and advance PC by 1
 : BYTE@ ( -- byte )
-  _PC @ DUP 1+ _PC ! TC@
+  _PC @ DUP 1+ _PC! TC@
 ;
 
 \ Fetch a WORD and advance PC by 2
 : WORD@ ( -- byte )
-  _PC @ DUP 2+ _PC ! T@
+  _PC @ DUP 2+ _PC! T@
 ;
 
 : DUMPPC _PC @ DUP 3 + SWAP DO I TC@ C. LOOP ;
@@ -151,7 +153,7 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 \ :NONAME ( ASL ZP     ) ; $06 BIND \ ASL zp
 \ :NONAME ( ASL ZPX    ) ; $16 BIND \ ASL zp,x
 
-: ?BRA ( f -- ) BYTE@ SWAP IF _PC @ SWAP DUP $80 AND IF FF00 OR NEG - ELSE + THEN _PC ! ELSE DROP THEN ;
+: ?BRA ( f -- ) BYTE@ SWAP IF _PC @ SWAP DUP $80 AND IF FF00 OR NEG - ELSE + THEN _PC! ELSE DROP THEN ;
 :NONAME ( BRA PCR    ) 1               ?BRA ; $80 BIND \ BRA r
 :NONAME ( BEQ PCR    ) _P C@ 'Z AND    ?BRA ; $F0 BIND \ BEQ r
 :NONAME ( BNE PCR    ) _P C@ 'Z AND 0= ?BRA ; $D0 BIND \ BNE r
@@ -398,7 +400,7 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 
 \-- store a minimal program
 
-: ORG   DUP TO THERE _PC ! ;
+: ORG   DUP TO THERE _PC! ;
 : _     TC, ;
 
 \ Test LDA IMM

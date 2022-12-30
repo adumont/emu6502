@@ -229,10 +229,14 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 \ :NONAME ( EOR ZP     ) ; $45 BIND \ EOR zp
 \ :NONAME ( EOR ZPX    ) ; $55 BIND \ EOR zp,x
 
-\ :NONAME ( JMP AINDX  ) ; $7C BIND \ JMP (a,x)
-\ :NONAME ( JMP IND    ) ; $6C BIND \ JMP (a)
-\ :NONAME ( JMP ABS    ) ; $4C BIND \ JMP a
+:NONAME ( JMP ABS    ) WORD@            _PC! ; $4C BIND \ JMP a
+:NONAME ( JMP IND    ) WORD@         T@ _PC! ; $6C BIND \ JMP (a)
+:NONAME ( JMP AINDX  ) WORD@ _X C@ + T@ _PC! ; $7C BIND \ JMP (a,x)
+
 \ :NONAME ( JSR ABS    ) ; $20 BIND \ JSR a
+
+\ :NONAME ( RTI STCK   ) ; $40 BIND \ RTI s
+\ :NONAME ( RTS STCK   ) ; $60 BIND \ RTS s
 
 : LDA ( b -- ) >NZ _A C! ;
 :NONAME ( LDA IMM    ) BYTE@                        LDA ; $A9 BIND \ LDA #
@@ -323,9 +327,6 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 \ :NONAME ( ROR ABSX   ) ; $7E BIND \ ROR a,x
 \ :NONAME ( ROR ZP     ) ; $66 BIND \ ROR zp
 \ :NONAME ( ROR ZPX    ) ; $76 BIND \ ROR zp,x
-
-\ :NONAME ( RTI STCK   ) ; $40 BIND \ RTI s
-\ :NONAME ( RTS STCK   ) ; $60 BIND \ RTS s
 
 \ :NONAME ( SBC INDX   ) ; $E1 BIND \ SBC (zp,x)
 \ :NONAME ( SBC ZIND   ) ; $F2 BIND \ SBC (zp)

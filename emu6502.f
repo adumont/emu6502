@@ -321,7 +321,7 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 \ :NONAME ( LSR ZP     ) ; $46 BIND \ LSR zp
 \ :NONAME ( LSR ZPX    ) ; $56 BIND \ LSR zp,x
 
-\ :NONAME ( NOP IMPL   ) ; $EA BIND \ NOP i
+:NONAME ( NOP IMPL   ) ; $EA BIND \ NOP i
 
 \ :NONAME ( PHA STCK   ) ; $48 BIND \ PHA s
 \ :NONAME ( PHP STCK   ) ; $08 BIND \ PHP s

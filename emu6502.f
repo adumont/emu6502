@@ -39,6 +39,8 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 
 : DUMPPC _PC @ DUP 3 + SWAP DO I TC@ C. LOOP ;
 
+1 VALUE TRACE  \ flag, show Status or not in NEXT
+
 : STATUS
   .( A:) _A C? .( X:) _X C? .( Y:) _Y C?
   .( P:) _P C? .( SP:) _SP C? .( PC:) _PC ? .( > ) DUMPPC CR ;
@@ -47,7 +49,13 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
   ( FETCH   ) BYTE@
   ( DECODE  ) 2* OPCODES + @
   ( EXECUTE ) EXEC
-              STATUS ;
+  TRACE IF STATUS THEN ;
+
+: RUN ( n -- )
+  TRACE >R      \ save TRACE
+  0 TO TRACE    \ no trace
+  ( n ) 0 DO NEXT LOOP
+  R> TO TRACE ; \ restore TRACE
 
 : BIND ( xt opcode -- )   2* OPCODES + ! ; \ saves XT in OPCODES table
 

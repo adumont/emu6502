@@ -14,16 +14,23 @@ CREATE _SP 0 C,   CREATE _PC 0  ,   CREATE _P  0 C,
 
 CREATE OPCODES #512 ALLOT
 CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
+\ 0000-00FF ZP
+\ 0100-01FF 6502 Stack
+\ 0200-02FD user memory
+02FE CONSTANT IN_CHAR
+02FF CONSTANT OUT_CHAR
 
 \ Target RAM operations
-: TC@ ( addr -- byte )    RAM + C@ ;
-: TC! ( byte addr -- )    RAM + C! ;
-: T@  ( addr -- word )    RAM +  @ ;
-: T!  ( addr -- word )    RAM +  ! ;
+: TC@ ( addr -- byte ) DUP IN_CHAR  = IF DROP GETC EXIT THEN RAM + C@ ;
+: TC! ( byte addr -- ) DUP OUT_CHAR = IF DROP EMIT EXIT THEN RAM + C! ;
+: T@  ( addr -- word )
+  DUP TC@       \ LO
+  SWAP 1+ TC@   \ HI
+  SWAP $100 * + \ LO HI --> HILO
+;
 
 0000 VALUE THERE \ Target HERE
 : TC, ( b -- ) THERE TC!   THERE 1+ TO THERE ;
-: T,  ( b -- ) THERE T!    THERE 2+ TO THERE ;
 
 \ -- PC --
 
@@ -396,5 +403,13 @@ NEXT 0222 FF T?MEM
 \ $0202    ca        DEX
 \ $0203    d0 fd     BNE $0202
 
+\ $0200 ORG
+\ A2 _ 0A _ CA _ D0 _ FD _
+
+\ Test IO
+\ $0200    ad fe 02  LDA $02fe
+\ $0203    8d ff 02  STA $02ff
+\ $0206    d0 f8     BNE $0600
+
 $0200 ORG
-A2 _ 0A _ CA _ D0 _ FD _
+AD _ FE _ 02 _ 8D _ FF _ 02 _ D0 _ F8 _

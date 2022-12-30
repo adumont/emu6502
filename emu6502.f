@@ -301,6 +301,17 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( EOR INDX   ) 'INDX  TC@ EOR ; $41 BIND \ EOR (zp,x)
 :NONAME ( EOR INDY   ) 'INDY  TC@ EOR ; $51 BIND \ EOR (zp),y
 
+: ORA ( b -- ) _A C@ OR LDA ;
+:NONAME ( ORA IMM    ) BYTE@      ORA ; $09 BIND \ ORA #
+:NONAME ( ORA ABS    ) 'ABS   TC@ ORA ; $0D BIND \ ORA a
+:NONAME ( ORA ABSX   ) 'ABSX  TC@ ORA ; $1D BIND \ ORA a,x
+:NONAME ( ORA ABSY   ) 'ABSY  TC@ ORA ; $19 BIND \ ORA a,y
+:NONAME ( ORA ZP     ) 'ZP    TC@ ORA ; $05 BIND \ ORA zp
+:NONAME ( ORA ZPX    ) 'ZPX   TC@ ORA ; $15 BIND \ ORA zp,x
+:NONAME ( ORA ZIND   ) 'ZIND  TC@ ORA ; $12 BIND \ ORA (zp)
+:NONAME ( ORA INDX   ) 'INDX  TC@ ORA ; $01 BIND \ ORA (zp,x)
+:NONAME ( ORA INDY   ) 'INDY  TC@ ORA ; $11 BIND \ ORA (zp),y
+
 \ :NONAME ( LSR ACC    ) ; $4A BIND \ LSR A
 \ :NONAME ( LSR ABS    ) ; $4E BIND \ LSR a
 \ :NONAME ( LSR ABSX   ) ; $5E BIND \ LSR a,x
@@ -308,16 +319,6 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 \ :NONAME ( LSR ZPX    ) ; $56 BIND \ LSR zp,x
 
 \ :NONAME ( NOP IMPL   ) ; $EA BIND \ NOP i
-
-\ :NONAME ( ORA INDX   ) ; $01 BIND \ ORA (zp,x)
-\ :NONAME ( ORA ZIND   ) ; $12 BIND \ ORA (zp)
-\ :NONAME ( ORA INDY   ) ; $11 BIND \ ORA (zp),y
-\ :NONAME ( ORA IMM    ) ; $09 BIND \ ORA #
-\ :NONAME ( ORA ABS    ) ; $0D BIND \ ORA a
-\ :NONAME ( ORA ABSX   ) ; $1D BIND \ ORA a,x
-\ :NONAME ( ORA ABSY   ) ; $19 BIND \ ORA a,y
-\ :NONAME ( ORA ZP     ) ; $05 BIND \ ORA zp
-\ :NONAME ( ORA ZPX    ) ; $15 BIND \ ORA zp,x
 
 \ :NONAME ( PHA STCK   ) ; $48 BIND \ PHA s
 \ :NONAME ( PHP STCK   ) ; $08 BIND \ PHP s

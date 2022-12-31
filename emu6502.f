@@ -189,27 +189,31 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 \ :NONAME ( CPY ABS    ) ; $CC BIND \ CPY a
 \ :NONAME ( CPY ZP     ) ; $C4 BIND \ CPY zp
 
-: INCR ( reg -- ) DUP C@ 1+   >NZ  SWAP C! ; \ no need to $FF MOD as we store with C!
+: REG++ ( reg -- ) DUP C@ 1+   >NZ  SWAP C! ; \ no need to $FF MOD as we store with C!
 
-:NONAME ( INC ACC    ) _A INCR ; $1A BIND \ INC A
-:NONAME ( INX IMPL   ) _X INCR ; $E8 BIND \ INX i
-:NONAME ( INY IMPL   ) _Y INCR ; $C8 BIND \ INY i
+:NONAME ( INC ACC    ) _A REG++ ; $1A BIND \ INC A
+:NONAME ( INX IMPL   ) _X REG++ ; $E8 BIND \ INX i
+:NONAME ( INY IMPL   ) _Y REG++ ; $C8 BIND \ INY i
 
-:NONAME ( INC ABS    ) WORD@         DUP TC@ 1+ SWAP TC! ; $EE BIND \ INC a
-:NONAME ( INC ABSX   ) WORD@ _X C@ + DUP TC@ 1+ SWAP TC! ; $FE BIND \ INC a,x
-:NONAME ( INC ZP     ) BYTE@         DUP TC@ 1+ SWAP TC! ; $E6 BIND \ INC zp
-:NONAME ( INC ZPX    ) BYTE@ _X C@ + DUP TC@ 1+ SWAP TC! ; $F6 BIND \ INC zp,x
+: MEM++ ( reg -- ) DUP TC@ 1+ >NZ SWAP TC! ;
 
-: DECR ( reg -- ) DUP C@ 1 -  >NZ  SWAP C! ; \ no need to $FF MOD as we store with C!
+:NONAME ( INC ABS    ) WORD@         MEM++ ; $EE BIND \ INC a
+:NONAME ( INC ABSX   ) WORD@ _X C@ + MEM++ ; $FE BIND \ INC a,x
+:NONAME ( INC ZP     ) BYTE@         MEM++ ; $E6 BIND \ INC zp
+:NONAME ( INC ZPX    ) BYTE@ _X C@ + MEM++ ; $F6 BIND \ INC zp,x
 
-:NONAME ( DEC ACC    ) _A DECR ; $3A BIND \ DEC A
-:NONAME ( DEX IMPL   ) _X DECR ; $CA BIND \ DEX i
-:NONAME ( DEY IMPL   ) _Y DECR ; $88 BIND \ DEY i
+: REG-- ( reg -- ) DUP C@ 1 -  >NZ  SWAP C! ; \ no need to $FF MOD as we store with C!
 
-:NONAME ( DEC ABS    ) WORD@         DUP TC@ 1 - SWAP TC! ; $CE BIND \ DEC a
-:NONAME ( DEC ABSX   ) WORD@ _X C@ + DUP TC@ 1 - SWAP TC! ; $DE BIND \ DEC a,x
-:NONAME ( DEC ZP     ) BYTE@         DUP TC@ 1 - SWAP TC! ; $C6 BIND \ DEC zp
-:NONAME ( DEC ZPX    ) BYTE@ _X C@ + DUP TC@ 1 - SWAP TC! ; $D6 BIND \ DEC zp,x
+:NONAME ( DEC ACC    ) _A REG-- ; $3A BIND \ DEC A
+:NONAME ( DEX IMPL   ) _X REG-- ; $CA BIND \ DEX i
+:NONAME ( DEY IMPL   ) _Y REG-- ; $88 BIND \ DEY i
+
+: MEM-- ( reg -- ) DUP TC@ 1 - >NZ SWAP TC! ;
+
+:NONAME ( DEC ABS    ) WORD@         MEM-- ; $CE BIND \ DEC a
+:NONAME ( DEC ABSX   ) WORD@ _X C@ + MEM-- ; $DE BIND \ DEC a,x
+:NONAME ( DEC ZP     ) BYTE@         MEM-- ; $C6 BIND \ DEC zp
+:NONAME ( DEC ZPX    ) BYTE@ _X C@ + MEM-- ; $D6 BIND \ DEC zp,x
 
 :NONAME ( JMP ABS    ) WORD@            _PC! ; $4C BIND \ JMP a
 :NONAME ( JMP IND    ) WORD@         T@ _PC! ; $6C BIND \ JMP (a)

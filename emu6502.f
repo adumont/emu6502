@@ -24,8 +24,8 @@ HEX
 : C? C@ C. ;
 : CELLS CELL * ;
 
-CREATE _A  0 C,   CREATE _X  0 C,   CREATE _Y  0 C,
-CREATE _SP 0 C,   CREATE _PC 0  ,   CREATE _P  0 C,
+CREATE _A  0 C,   CREATE _X  0 C,   CREATE _Y    0 C,
+CREATE _SP 0 C,   CREATE _PC 0  ,   CREATE _P  $20 C,
 
 CREATE OPCODES #256 CELLS ALLOT
 CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
@@ -84,13 +84,13 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 : BIND ( xt opcode -- )   CELLS OPCODES + ! ; \ saves XT in OPCODES table
 
 \ -- Processor Flags handling
-%10000000 VALUE 'N
-%01000000 VALUE 'V
-%00010000 VALUE 'B
-%00001000 VALUE 'D
-%00000100 VALUE 'I
-%00000010 VALUE 'Z
-%00000001 VALUE 'C
+%10000000 VALUE 'N    \ Negative flag
+%01000000 VALUE 'V    \ Overflow flag
+%00010000 VALUE 'B    \ Break flag, set whenever a BRK instruction is executed, clear at all other times
+%00001000 VALUE 'D    \ Decimal flag.
+%00000100 VALUE 'I    \ Interrupt disabled. When this bit is set, the computer will not honor interrupts
+%00000010 VALUE 'Z    \ Zero flag
+%00000001 VALUE 'C    \ Carry flag
 
 : CLEAR ( mask -- ) NOT _P C@ AND _P C! ;
 : SET   ( mask -- )     _P C@ OR  _P C! ;
@@ -162,14 +162,14 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 \ :NONAME ( BIT ZP     ) ; $24 BIND \ BIT zp
 \ :NONAME ( BIT ZPX    ) ; $34 BIND \ BIT zp,x
 
-\ :NONAME ( SEC IMPL   ) ; $38 BIND \ SEC i
-\ :NONAME ( SED IMPL   ) ; $F8 BIND \ SED i
-\ :NONAME ( SEI IMPL   ) ; $78 BIND \ SEI i
+:NONAME ( SEC IMPL   ) 'C SET   ; $38 BIND \ SEC i
+:NONAME ( SED IMPL   ) 'D SET   ; $F8 BIND \ SED i
+:NONAME ( SEI IMPL   ) 'I SET   ; $78 BIND \ SEI i
 
-\ :NONAME ( CLC IMPL   ) ; $18 BIND \ CLC i
-\ :NONAME ( CLD IMPL   ) ; $D8 BIND \ CLD i
-\ :NONAME ( CLI IMPL   ) ; $58 BIND \ CLI i
-\ :NONAME ( CLV IMPL   ) ; $B8 BIND \ CLV i
+:NONAME ( CLC IMPL   ) 'C CLEAR ; $18 BIND \ CLC i
+:NONAME ( CLD IMPL   ) 'D CLEAR ; $D8 BIND \ CLD i
+:NONAME ( CLI IMPL   ) 'I CLEAR ; $58 BIND \ CLI i
+:NONAME ( CLV IMPL   ) 'V CLEAR ; $B8 BIND \ CLV i
 
 \ :NONAME ( CMP INDX   ) ; $C1 BIND \ CMP (zp,x)
 \ :NONAME ( CMP ZIND   ) ; $D2 BIND \ CMP (zp)

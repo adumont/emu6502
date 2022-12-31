@@ -315,22 +315,25 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( AND INDX   ) 'INDX  TC@ _AND ; $21 BIND \ AND (zp,x)
 :NONAME ( AND INDY   ) 'INDY  TC@ _AND ; $31 BIND \ AND (zp),y
 
+:NONAME ( NOP IMPL   ) ; $EA BIND \ NOP i
+
+: PUSH ( reg -- ) C@ _SP C@ SWAP OVER $0100 OR TC! 1 - _SP C! ;
+:NONAME ( PHA STCK   ) _A PUSH ; $48 BIND \ PHA s
+:NONAME ( PHX STCK   ) _X PUSH ; $DA BIND \ PHX s
+:NONAME ( PHY STCK   ) _Y PUSH ; $5A BIND \ PHY s
+:NONAME ( PHP STCK   ) _P PUSH ; $08 BIND \ PHP s
+
+: PULL ( reg -- ) _SP C@ 1+ DUP _SP C! $0100 OR TC@ >NZ SWAP C! ;
+:NONAME ( PLA STCK   ) _A PULL                    ; $68 BIND \ PLA s
+:NONAME ( PLX STCK   ) _X PULL                    ; $FA BIND \ PLX s
+:NONAME ( PLY STCK   ) _Y PULL                    ; $7A BIND \ PLY s
+:NONAME ( PLP STCK   ) _P PULL _P C@ $20 OR _P C! ; $28 BIND \ PLP s
+
 \ :NONAME ( LSR ACC    ) ; $4A BIND \ LSR A
 \ :NONAME ( LSR ABS    ) ; $4E BIND \ LSR a
 \ :NONAME ( LSR ABSX   ) ; $5E BIND \ LSR a,x
 \ :NONAME ( LSR ZP     ) ; $46 BIND \ LSR zp
 \ :NONAME ( LSR ZPX    ) ; $56 BIND \ LSR zp,x
-
-:NONAME ( NOP IMPL   ) ; $EA BIND \ NOP i
-
-\ :NONAME ( PHA STCK   ) ; $48 BIND \ PHA s
-\ :NONAME ( PHP STCK   ) ; $08 BIND \ PHP s
-\ :NONAME ( PHX STCK   ) ; $DA BIND \ PHX s
-\ :NONAME ( PHY STCK   ) ; $5A BIND \ PHY s
-\ :NONAME ( PLA STCK   ) ; $68 BIND \ PLA s
-\ :NONAME ( PLP STCK   ) ; $28 BIND \ PLP s
-\ :NONAME ( PLX STCK   ) ; $FA BIND \ PLX s
-\ :NONAME ( PLY STCK   ) ; $7A BIND \ PLY s
 
 \ :NONAME ( ROL ACC    ) ; $2A BIND \ ROL A
 \ :NONAME ( ROL ABS    ) ; $2E BIND \ ROL a

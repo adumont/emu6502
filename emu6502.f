@@ -125,6 +125,17 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 \ ZIND   14    (zp)    2    *    Zero Page Indirect (zp)
 \ INDY   15    (zp),y  2         Zero Page Indirect Indexed with Y (zp), y
 
+\ Addressing modes words
+: 'ZP   ( -- addr ) BYTE@ ;                     \ Zero Page zp
+: 'ABS  ( -- addr ) WORD@ ;                     \ Absolute a
+: 'ABSX ( -- addr ) WORD@ _X C@ + ;             \ Absolute Indexed with X a,x
+: 'ABSY ( -- addr ) WORD@ _Y C@ + ;             \ Absolute Indexed with Y a,y
+: 'ZPX  ( -- addr ) BYTE@ _X C@ + $FF AND ;     \ Zero Page Indexed with X zp,x
+: 'ZPY  ( -- addr ) BYTE@ _Y C@ + $FF AND ;     \ Zero Page Indexed with Y zp,y
+: 'INDX ( -- addr ) BYTE@ _X C@ + $FF AND T@ ;  \ Zero Page Indexed Indirect (zp,x)
+: 'ZIND ( -- addr ) BYTE@ T@ ;                  \ Zero Page Indirect (zp)
+: 'INDY ( -- addr ) BYTE@ T@ _Y C@ + ;          \ Zero Page Indirect Indexed with Y (zp), y
+
 \ -- boilerplate opcodes definitions to be defined
 
 :NONAME ( BRK STCK   ) .( BRK) CR ; $00 BIND \ BRK s
@@ -195,25 +206,25 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( INX IMPL   ) _X REG++ ; $E8 BIND \ INX i
 :NONAME ( INY IMPL   ) _Y REG++ ; $C8 BIND \ INY i
 
-: MEM++ ( reg -- ) DUP TC@ 1+ >NZ SWAP TC! ;
-
-:NONAME ( INC ABS    ) WORD@         MEM++ ; $EE BIND \ INC a
-:NONAME ( INC ABSX   ) WORD@ _X C@ + MEM++ ; $FE BIND \ INC a,x
-:NONAME ( INC ZP     ) BYTE@         MEM++ ; $E6 BIND \ INC zp
-:NONAME ( INC ZPX    ) BYTE@ _X C@ + MEM++ ; $F6 BIND \ INC zp,x
-
 : REG-- ( reg -- ) DUP C@ 1 -  >NZ  SWAP C! ; \ no need to $FF MOD as we store with C!
 
 :NONAME ( DEC ACC    ) _A REG-- ; $3A BIND \ DEC A
 :NONAME ( DEX IMPL   ) _X REG-- ; $CA BIND \ DEX i
 :NONAME ( DEY IMPL   ) _Y REG-- ; $88 BIND \ DEY i
 
+: MEM++ ( reg -- ) DUP TC@ 1+ >NZ SWAP TC! ;
+
+:NONAME ( INC ABS    ) 'ABS   MEM++ ; $EE BIND \ INC a
+:NONAME ( INC ABSX   ) 'ABSX  MEM++ ; $FE BIND \ INC a,x
+:NONAME ( INC ZP     ) 'ZP    MEM++ ; $E6 BIND \ INC zp
+:NONAME ( INC ZPX    ) 'ZPX   MEM++ ; $F6 BIND \ INC zp,x
+
 : MEM-- ( reg -- ) DUP TC@ 1 - >NZ SWAP TC! ;
 
-:NONAME ( DEC ABS    ) WORD@         MEM-- ; $CE BIND \ DEC a
-:NONAME ( DEC ABSX   ) WORD@ _X C@ + MEM-- ; $DE BIND \ DEC a,x
-:NONAME ( DEC ZP     ) BYTE@         MEM-- ; $C6 BIND \ DEC zp
-:NONAME ( DEC ZPX    ) BYTE@ _X C@ + MEM-- ; $D6 BIND \ DEC zp,x
+:NONAME ( DEC ABS    ) 'ABS   MEM-- ; $CE BIND \ DEC a
+:NONAME ( DEC ABSX   ) 'ABSX  MEM-- ; $DE BIND \ DEC a,x
+:NONAME ( DEC ZP     ) 'ZP    MEM-- ; $C6 BIND \ DEC zp
+:NONAME ( DEC ZPX    ) 'ZPX   MEM-- ; $D6 BIND \ DEC zp,x
 
 :NONAME ( JMP ABS    ) WORD@            _PC! ; $4C BIND \ JMP a
 :NONAME ( JMP IND    ) WORD@         T@ _PC! ; $6C BIND \ JMP (a)
@@ -224,16 +235,6 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 \ :NONAME ( RTI STCK   ) ; $40 BIND \ RTI s
 \ :NONAME ( RTS STCK   ) ; $60 BIND \ RTS s
 
-\ Addressing modes words
-: 'ZP   ( -- addr ) BYTE@ ;                     \ Zero Page zp
-: 'ABS  ( -- addr ) WORD@ ;                     \ Absolute a
-: 'ABSX ( -- addr ) WORD@ _X C@ + ;             \ Absolute Indexed with X a,x
-: 'ABSY ( -- addr ) WORD@ _Y C@ + ;             \ Absolute Indexed with Y a,y
-: 'ZPX  ( -- addr ) BYTE@ _X C@ + $FF AND ;     \ Zero Page Indexed with X zp,x
-: 'ZPY  ( -- addr ) BYTE@ _Y C@ + $FF AND ;     \ Zero Page Indexed with Y zp,y
-: 'INDX ( -- addr ) BYTE@ _X C@ + $FF AND T@ ;  \ Zero Page Indexed Indirect (zp,x)
-: 'ZIND ( -- addr ) BYTE@ T@ ;                  \ Zero Page Indirect (zp)
-: 'INDY ( -- addr ) BYTE@ T@ _Y C@ + ;          \ Zero Page Indirect Indexed with Y (zp), y
 
 : LDA ( b -- ) >NZ _A C! ;
 :NONAME ( LDA IMM    ) BYTE@      LDA ; $A9 BIND \ LDA #

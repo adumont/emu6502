@@ -102,7 +102,7 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 : >Z   ( b -- b ) DUP     0= 'Z UPDATE-FLAG ;
 : >D   ( f -- f ) DUP        'D UPDATE-FLAG ;
 : >V   ( f -- f ) DUP        'V UPDATE-FLAG ;
-: >C   ( f -- f ) DUP        'C UPDATE-FLAG ;
+: >C   ( f -- f )            'C UPDATE-FLAG ; \ this one is droppy
 
 
 \ 65C02 Addressing Modes
@@ -149,12 +149,6 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 \ :NONAME ( ADC ABSY   ) ; $79 BIND \ ADC a,y
 \ :NONAME ( ADC ZP     ) ; $65 BIND \ ADC zp
 \ :NONAME ( ADC ZPX    ) ; $75 BIND \ ADC zp,x
-
-\ :NONAME ( ASL ACC    ) ; $0A BIND \ ASL A
-\ :NONAME ( ASL ABS    ) ; $0E BIND \ ASL a
-\ :NONAME ( ASL ABSX   ) ; $1E BIND \ ASL a,x
-\ :NONAME ( ASL ZP     ) ; $06 BIND \ ASL zp
-\ :NONAME ( ASL ZPX    ) ; $16 BIND \ ASL zp,x
 
 : ?BRA ( f -- ) BYTE@ SWAP IF _PC @ SWAP DUP $80 AND IF FF00 OR NEG - ELSE + THEN _PC! ELSE DROP THEN ;
 :NONAME ( BRA PCR    ) 1               ?BRA ; $80 BIND \ BRA r
@@ -234,7 +228,6 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 
 \ :NONAME ( RTI STCK   ) ; $40 BIND \ RTI s
 \ :NONAME ( RTS STCK   ) ; $60 BIND \ RTS s
-
 
 : LDA ( b -- ) >NZ _A C! ;
 :NONAME ( LDA IMM    ) BYTE@      LDA ; $A9 BIND \ LDA #
@@ -334,11 +327,21 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( PLY STCK   ) _Y PULL                    ; $7A BIND \ PLY s
 :NONAME ( PLP STCK   ) _P PULL _P C@ $20 OR _P C! ; $28 BIND \ PLP s
 
-\ :NONAME ( LSR ACC    ) ; $4A BIND \ LSR A
-\ :NONAME ( LSR ABS    ) ; $4E BIND \ LSR a
-\ :NONAME ( LSR ABSX   ) ; $5E BIND \ LSR a,x
-\ :NONAME ( LSR ZP     ) ; $46 BIND \ LSR zp
-\ :NONAME ( LSR ZPX    ) ; $56 BIND \ LSR zp,x
+:NONAME ( ASL ACC    ) _A C@ 2* $100 /MOD >C >NZ _A C! ; $0A BIND \ ASL A
+
+: ASL ( addr -- ) DUP TC@ 2* $100 /MOD >C >NZ SWAP TC! ;
+:NONAME ( ASL ABS    ) 'ABS  ASL ; $0E BIND \ ASL a
+:NONAME ( ASL ABSX   ) 'ABSX ASL ; $1E BIND \ ASL a,x
+:NONAME ( ASL ZP     ) 'ZP   ASL ; $06 BIND \ ASL zp
+:NONAME ( ASL ZPX    ) 'ZPX  ASL ; $16 BIND \ ASL zp,x
+
+:NONAME ( LSR ACC    ) _A C@ DUP 1 AND >C 2/ >NZ _A C! ; $4A BIND \ LSR A
+
+: LSR ( addr -- ) DUP TC@ DUP 1 AND >C 2/ >NZ SWAP TC! ;
+:NONAME ( LSR ABS    ) 'ABS  ASL ; $4E BIND \ LSR a
+:NONAME ( LSR ABSX   ) 'ABSX ASL ; $5E BIND \ LSR a,x
+:NONAME ( LSR ZP     ) 'ZP   ASL ; $46 BIND \ LSR zp
+:NONAME ( LSR ZPX    ) 'ZPX  ASL ; $56 BIND \ LSR zp,x
 
 \ :NONAME ( ROL ACC    ) ; $2A BIND \ ROL A
 \ :NONAME ( ROL ABS    ) ; $2E BIND \ ROL a

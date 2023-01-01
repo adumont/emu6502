@@ -327,33 +327,49 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( PLY STCK   ) _Y PULL                    ; $7A BIND \ PLY s
 :NONAME ( PLP STCK   ) _P PULL _P C@ $20 OR _P C! ; $28 BIND \ PLP s
 
-:NONAME ( ASL ACC    ) _A C@ 2* $100 /MOD >C >NZ _A C! ; $0A BIND \ ASL A
+\ ASL C <- [76543210] <- 0      N	Z	C
 
-: ASL ( addr -- ) DUP TC@ 2* $100 /MOD >C >NZ SWAP TC! ;
+: ASL# ( byte -- ) 2* $100 /MOD >C >NZ ;
+:NONAME ( ASL ACC    )       _A C@   ASL#    _A C! ; $0A BIND \ ASL A
+
+: ASL ( addr -- ) DUP TC@ ASL# SWAP TC! ;
 :NONAME ( ASL ABS    ) 'ABS  ASL ; $0E BIND \ ASL a
 :NONAME ( ASL ABSX   ) 'ABSX ASL ; $1E BIND \ ASL a,x
 :NONAME ( ASL ZP     ) 'ZP   ASL ; $06 BIND \ ASL zp
 :NONAME ( ASL ZPX    ) 'ZPX  ASL ; $16 BIND \ ASL zp,x
 
-:NONAME ( LSR ACC    ) _A C@ DUP 1 AND >C 2/ >NZ _A C! ; $4A BIND \ LSR A
+\ LSR 0 -> [76543210] -> C
 
-: LSR ( addr -- ) DUP TC@ DUP 1 AND >C 2/ >NZ SWAP TC! ;
-:NONAME ( LSR ABS    ) 'ABS  ASL ; $4E BIND \ LSR a
-:NONAME ( LSR ABSX   ) 'ABSX ASL ; $5E BIND \ LSR a,x
-:NONAME ( LSR ZP     ) 'ZP   ASL ; $46 BIND \ LSR zp
-:NONAME ( LSR ZPX    ) 'ZPX  ASL ; $56 BIND \ LSR zp,x
+: LSR# ( byte -- ) DUP 1 AND >C 2/ >NZ ; \ LSR the byte and set NZC flags
+:NONAME ( LSR ACC    ) _A C@ LSR# _A C! ; $4A BIND \ LSR A
 
-\ :NONAME ( ROL ACC    ) ; $2A BIND \ ROL A
-\ :NONAME ( ROL ABS    ) ; $2E BIND \ ROL a
-\ :NONAME ( ROL ABSX   ) ; $3E BIND \ ROL a,x
-\ :NONAME ( ROL ZP     ) ; $26 BIND \ ROL zp
-\ :NONAME ( ROL ZPX    ) ; $36 BIND \ ROL zp,x
+: LSR ( addr -- ) DUP TC@ LSR# SWAP TC! ; \ we redefine LSR again here
+:NONAME ( LSR ABS    ) 'ABS  LSR ; $4E BIND \ LSR a
+:NONAME ( LSR ABSX   ) 'ABSX LSR ; $5E BIND \ LSR a,x
+:NONAME ( LSR ZP     ) 'ZP   LSR ; $46 BIND \ LSR zp
+:NONAME ( LSR ZPX    ) 'ZPX  LSR ; $56 BIND \ LSR zp,x
 
-\ :NONAME ( ROR ACC    ) ; $6A BIND \ ROR A
-\ :NONAME ( ROR ABS    ) ; $6E BIND \ ROR a
-\ :NONAME ( ROR ABSX   ) ; $7E BIND \ ROR a,x
-\ :NONAME ( ROR ZP     ) ; $66 BIND \ ROR zp
-\ :NONAME ( ROR ZPX    ) ; $76 BIND \ ROR zp,x
+\ ROR C -> [76543210] -> C      N	Z	C
+
+: ROR# ( byte -- ) DUP 1 AND _P C@ 'C AND $100 * SWAP >C OR 2/ >NZ ;
+:NONAME ( ROR ACC    ) _A C@ ROR# _A C! ; $6A BIND \ ROR A
+
+: ROR ( addr -- ) DUP TC@ ROR# SWAP TC! ;
+:NONAME ( ROR ABS    ) 'ABS  ROR ; $6E BIND \ ROR a
+:NONAME ( ROR ABSX   ) 'ABSX ROR ; $7E BIND \ ROR a,x
+:NONAME ( ROR ZP     ) 'ZP   ROR ; $66 BIND \ ROR zp
+:NONAME ( ROR ZPX    ) 'ZPX  ROR ; $76 BIND \ ROR zp,x
+
+\ ROL C <- [76543210] <- C      N	Z	C
+
+: ROL# ( byte -- ) 2* $100 /MOD SWAP _P C@ 'C AND OR >NZ SWAP >C ;
+:NONAME ( ROL ACC    ) _A C@ ROL# _A C! ; $2A BIND \ ROL A
+
+: ROL ( addr -- ) DUP TC@ ROL# SWAP TC! ;
+:NONAME ( ROL ABS    ) 'ABS  ROL ; $2E BIND \ ROL a
+:NONAME ( ROL ABSX   ) 'ABSX ROL ; $3E BIND \ ROL a,x
+:NONAME ( ROL ZP     ) 'ZP   ROL ; $26 BIND \ ROL zp
+:NONAME ( ROL ZPX    ) 'ZPX  ROL ; $36 BIND \ ROL zp,x
 
 \ :NONAME ( SBC INDX   ) ; $E1 BIND \ SBC (zp,x)
 \ :NONAME ( SBC ZIND   ) ; $F2 BIND \ SBC (zp)

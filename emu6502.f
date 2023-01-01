@@ -435,7 +435,7 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 \ :NONAME ( BBS7 PCR   ) ; $FF BIND \ BBS7 r
 
 \ TESTS
-: T?= ( a b -- )    = 0= IF CR .( ** ERROR ** ) CR CR THEN ;
+: T?= ( a b -- )    = 0= IF CR .( ** ERROR ** ) CR ABORT THEN ;
 : T?A ( b -- )      _A C@ T?= ;
 : T?X ( b -- )      _X C@ T?= ;
 : T?Y ( b -- )      _Y C@ T?= ;
@@ -464,8 +464,7 @@ NEXT 0222 FF T?MEM
 \ $0202    ca        DEX
 \ $0203    d0 fd     BNE $0202
 
-\ $0200 ORG
-\ A2 _ 0A _ CA _ D0 _ FD _
+\ $0200 ORG A2 _ 0A _ CA _ D0 _ FD _
 
 \ Test IO
 \ AD FE 02  LDA $02fe
@@ -473,5 +472,6 @@ NEXT 0222 FF T?MEM
 \ 8d ff 02  STA $02ff
 \ d0 f8     BNE $0600
 
-$0200 ORG
-AD _ FE _ 02 _ 1A _ 8D _ FF _ 02 _ D0 _ F7 _
+$0200 ORG AD _ FE _ 02 _ 1A _ 8D _ FF _ 02 _ D0 _ F7 _
+
+$0200 ORG 38 _ A9 _ A6 _ 4A _ 4A _ 4A _ 4A _ 4A _ 4A _ 4A _ 4A _ 4A _

@@ -143,8 +143,8 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( BRA PCR    ) 1               ?BRA ; $80 BIND \ BRA r
 :NONAME ( BEQ PCR    ) _P C@ 'Z AND    ?BRA ; $F0 BIND \ BEQ r
 :NONAME ( BNE PCR    ) _P C@ 'Z AND 0= ?BRA ; $D0 BIND \ BNE r
-:NONAME ( BCS PCR    ) _P C@ 'C AND    ?BRA ; $B0 BIND \ BCS r
-:NONAME ( BCC PCR    ) _P C@ 'C AND 0= ?BRA ; $90 BIND \ BCC r
+:NONAME ( BCS PCR    )           C>    ?BRA ; $B0 BIND \ BCS r
+:NONAME ( BCC PCR    )           C> 0= ?BRA ; $90 BIND \ BCC r
 :NONAME ( BVS PCR    ) _P C@ 'V AND    ?BRA ; $70 BIND \ BVS r
 :NONAME ( BVC PCR    ) _P C@ 'V AND 0= ?BRA ; $50 BIND \ BVC r
 :NONAME ( BMI PCR    ) _P C@ 'N AND    ?BRA ; $30 BIND \ BMI r
@@ -311,7 +311,7 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 
 \ ROR C -> [76543210] -> C      N	Z	C
 
-: ROR# ( byte -- ) DUP 1 AND _P C@ 'C AND $100 * SWAP >C OR 2/ >NZ ;
+: ROR# ( byte -- ) DUP 1 AND C> $100 * SWAP >C OR 2/ >NZ ;
 :NONAME ( ROR ACC    ) _A C@ ROR# _A C! ; $6A BIND \ ROR A
 
 : ROR ( addr -- ) DUP TC@ ROR# SWAP TC! ;
@@ -322,7 +322,7 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 
 \ ROL C <- [76543210] <- C      N	Z	C
 
-: ROL# ( byte -- ) 2* $100 /MOD SWAP _P C@ 'C AND OR >NZ SWAP >C ;
+: ROL# ( byte -- ) 2* $100 /MOD SWAP C> OR >NZ SWAP >C ;
 :NONAME ( ROL ACC    ) _A C@ ROL# _A C! ; $2A BIND \ ROL A
 
 : ROL ( addr -- ) DUP TC@ ROL# SWAP TC! ;

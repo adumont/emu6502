@@ -137,7 +137,6 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 
 \ -- boilerplate opcodes definitions to be defined
 
-:NONAME ( BRK STCK   ) 'B SET .( BRK) CR ; $00 BIND \ BRK s
 
 \ :NONAME ( ADC INDX   ) ; $61 BIND \ ADC (zp,x)
 \ :NONAME ( ADC ZIND   ) ; $72 BIND \ ADC (zp)
@@ -148,6 +147,7 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 \ :NONAME ( ADC ABSY   ) ; $79 BIND \ ADC a,y
 \ :NONAME ( ADC ZP     ) ; $65 BIND \ ADC zp
 \ :NONAME ( ADC ZPX    ) ; $75 BIND \ ADC zp,x
+:NONAME ( BRK STCK   ) 'B SET ." BRK" CR ; $00 BIND \ BRK s
 
 : ?BRA ( f -- ) BYTE@ SWAP IF _PC @ SWAP DUP $80 AND IF FF00 OR NEG - ELSE + THEN _PC! ELSE DROP THEN ;
 :NONAME ( BRA PCR    ) 1               ?BRA ; $80 BIND \ BRA r

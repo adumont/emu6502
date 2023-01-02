@@ -137,16 +137,6 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 
 \ -- boilerplate opcodes definitions to be defined
 
-
-\ :NONAME ( ADC INDX   ) ; $61 BIND \ ADC (zp,x)
-\ :NONAME ( ADC ZIND   ) ; $72 BIND \ ADC (zp)
-\ :NONAME ( ADC INDY   ) ; $71 BIND \ ADC (zp),y
-\ :NONAME ( ADC IMM    ) ; $69 BIND \ ADC #
-\ :NONAME ( ADC ABS    ) ; $6D BIND \ ADC a
-\ :NONAME ( ADC ABSX   ) ; $7D BIND \ ADC a,x
-\ :NONAME ( ADC ABSY   ) ; $79 BIND \ ADC a,y
-\ :NONAME ( ADC ZP     ) ; $65 BIND \ ADC zp
-\ :NONAME ( ADC ZPX    ) ; $75 BIND \ ADC zp,x
 :NONAME ( BRK STCK   ) 'B SET ." BRK" CR ; $00 BIND \ BRK s
 
 : ?BRA ( f -- ) BYTE@ SWAP IF _PC @ SWAP DUP $80 AND IF FF00 OR NEG - ELSE + THEN _PC! ELSE DROP THEN ;
@@ -168,24 +158,6 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( CLD IMPL   ) 'D CLEAR ; $D8 BIND \ CLD i
 :NONAME ( CLI IMPL   ) 'I CLEAR ; $58 BIND \ CLI i
 :NONAME ( CLV IMPL   ) 'V CLEAR ; $B8 BIND \ CLV i
-
-\ :NONAME ( CMP INDX   ) ; $C1 BIND \ CMP (zp,x)
-\ :NONAME ( CMP ZIND   ) ; $D2 BIND \ CMP (zp)
-\ :NONAME ( CMP INDY   ) ; $D1 BIND \ CMP (zp),y
-\ :NONAME ( CMP IMM    ) ; $C9 BIND \ CMP #
-\ :NONAME ( CMP ABS    ) ; $CD BIND \ CMP a
-\ :NONAME ( CMP ABSX   ) ; $DD BIND \ CMP a,x
-\ :NONAME ( CMP ABSY   ) ; $D9 BIND \ CMP a,y
-\ :NONAME ( CMP ZP     ) ; $C5 BIND \ CMP zp
-\ :NONAME ( CMP ZPX    ) ; $D5 BIND \ CMP zp,x
-
-\ :NONAME ( CPX IMM    ) ; $E0 BIND \ CPX #
-\ :NONAME ( CPX ABS    ) ; $EC BIND \ CPX a
-\ :NONAME ( CPX ZP     ) ; $E4 BIND \ CPX zp
-
-\ :NONAME ( CPY IMM    ) ; $C0 BIND \ CPY #
-\ :NONAME ( CPY ABS    ) ; $CC BIND \ CPY a
-\ :NONAME ( CPY ZP     ) ; $C4 BIND \ CPY zp
 
 : REG++ ( reg -- ) DUP C@ 1+   >NZ  SWAP C! ; \ no need to $FF MOD as we store with C!
 
@@ -359,15 +331,69 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( ROL ZP     ) 'ZP   ROL ; $26 BIND \ ROL zp
 :NONAME ( ROL ZPX    ) 'ZPX  ROL ; $36 BIND \ ROL zp,x
 
-\ :NONAME ( SBC INDX   ) ; $E1 BIND \ SBC (zp,x)
-\ :NONAME ( SBC ZIND   ) ; $F2 BIND \ SBC (zp)
-\ :NONAME ( SBC INDY   ) ; $F1 BIND \ SBC (zp),y
-\ :NONAME ( SBC IMM    ) ; $E9 BIND \ SBC #
-\ :NONAME ( SBC ABS    ) ; $ED BIND \ SBC a
-\ :NONAME ( SBC ABSX   ) ; $FD BIND \ SBC a,x
-\ :NONAME ( SBC ABSY   ) ; $F9 BIND \ SBC a,y
-\ :NONAME ( SBC ZP     ) ; $E5 BIND \ SBC zp
-\ :NONAME ( SBC ZPX    ) ; $F5 BIND \ SBC zp,x
+\ Info on overflow (V) flag here https://www.righto.com/2012/12/the-6502-overflow-flag-explained.html
+: BIN-ADC ( byte -- ) \ Binary ADC
+  DUP _A C@ DUP -ROT + C> + $100 /MOD >C DUP >R XOR SWAP R@ XOR AND $80 AND >V R> >NZ _A C! ;
+: ADC BIN-ADC ;
+
+:NONAME ( ADC IMM    ) BYTE@      ADC ; $69 BIND \ ADC #
+:NONAME ( ADC ZP     ) 'ZP    TC@ ADC ; $65 BIND \ ADC zp
+:NONAME ( ADC ABS    ) 'ABS   TC@ ADC ; $6D BIND \ ADC a
+:NONAME ( ADC ABSX   ) 'ABSX  TC@ ADC ; $7D BIND \ ADC a,x
+:NONAME ( ADC ABSY   ) 'ABSY  TC@ ADC ; $79 BIND \ ADC a,y
+:NONAME ( ADC ZPX    ) 'ZPX   TC@ ADC ; $75 BIND \ ADC zp,x
+:NONAME ( ADC INDX   ) 'INDX  TC@ ADC ; $61 BIND \ ADC (zp,x)
+:NONAME ( ADC ZIND   ) 'ZIND  TC@ ADC ; $72 BIND \ ADC (zp)
+:NONAME ( ADC INDY   ) 'INDY  TC@ ADC ; $71 BIND \ ADC (zp),y
+
+\ : COMP ( byte ) DUP 80 AND IF $FF NOT OR THEN ; \ complement if byte is neg  00F1 -> $FFFFFFF1
+
+\ : BIN-SBC ( byte -- ) \ Binary SBC
+\   \ like ADC but we NOT the operand. Also we need to pad A with 1s
+\   \ on the left if negative (as our Forth arith is >8 bits!!)
+\   NOT DUP _A C@ COMP
+\   DUP -ROT + C> + $100 /MOD >C DUP >R XOR SWAP R@ XOR AND $80 AND >V R> >NZ _A C! ;
+
+\ SBC: performs A + 1complement(operand) + Carry, updates flags and A per the result
+: BIN-SBC ( byte -- ) \ Binary SBC
+  \ like ADC but we NOT the operand
+  NOT $FF AND DUP _A C@ DUP -ROT + C> +
+  $100 /MOD >C DUP >R XOR SWAP R@ XOR AND $80 AND >V R> >NZ _A C! ;
+
+: SBC BIN-SBC ;
+:NONAME ( SBC IMM    ) BYTE@      SBC ; $E9 BIND \ SBC #
+:NONAME ( SBC ZP     ) 'ZP    TC@ SBC ; $E5 BIND \ SBC zp
+:NONAME ( SBC ABS    ) 'ABS   TC@ SBC ; $ED BIND \ SBC a
+:NONAME ( SBC ABSX   ) 'ABSX  TC@ SBC ; $FD BIND \ SBC a,x
+:NONAME ( SBC ABSY   ) 'ABSY  TC@ SBC ; $F9 BIND \ SBC a,y
+:NONAME ( SBC ZPX    ) 'ZPX   TC@ SBC ; $F5 BIND \ SBC zp,x
+:NONAME ( SBC INDX   ) 'INDX  TC@ SBC ; $E1 BIND \ SBC (zp,x)
+:NONAME ( SBC ZIND   ) 'ZIND  TC@ SBC ; $F2 BIND \ SBC (zp)
+:NONAME ( SBC INDY   ) 'INDY  TC@ SBC ; $F1 BIND \ SBC (zp),y
+
+\ CMP/CPX/CPY: performs A + 1complement(operand) + 1 and updates flags according to the result
+: CMP ( byte A -- ) SWAP NOT $FF AND + 1+ $100 /MOD >C >NZ DROP ;
+: CPA ( byte -- ) _A C@ CMP ;
+
+:NONAME ( CMP IMM    ) BYTE@      CPA ; $C9 BIND \ CMP #
+:NONAME ( CMP ZP     ) 'ZP    TC@ CPA ; $C5 BIND \ CMP zp
+:NONAME ( CMP ABS    ) 'ABS   TC@ CPA ; $CD BIND \ CMP a
+:NONAME ( CMP ABSX   ) 'ABSX  TC@ CPA ; $DD BIND \ CMP a,x
+:NONAME ( CMP ABSY   ) 'ABSY  TC@ CPA ; $D9 BIND \ CMP a,y
+:NONAME ( CMP ZPX    ) 'ZPX   TC@ CPA ; $D5 BIND \ CMP zp,x
+:NONAME ( CMP INDX   ) 'INDX  TC@ CPA ; $C1 BIND \ CMP (zp,x)
+:NONAME ( CMP ZIND   ) 'ZIND  TC@ CPA ; $D2 BIND \ CMP (zp)
+:NONAME ( CMP INDY   ) 'INDY  TC@ CPA ; $D1 BIND \ CMP (zp),y
+
+: CPX ( byte -- ) _X C@ CMP ;
+:NONAME ( CPX IMM    ) BYTE@      CPX ; $E0 BIND \ CPX #
+:NONAME ( CPX ZP     ) 'ZP    TC@ CPX ; $E4 BIND \ CPX zp
+:NONAME ( CPX ABS    ) 'ABS   TC@ CPX ; $EC BIND \ CPX a
+
+: CPY ( byte -- ) _Y C@ CMP ;
+:NONAME ( CPY IMM    ) BYTE@      CPY ; $C0 BIND \ CPY #
+:NONAME ( CPY ZP     ) 'ZP    TC@ CPY ; $C4 BIND \ CPY zp
+:NONAME ( CPY ABS    ) 'ABS   TC@ CPY ; $CC BIND \ CPY a
 
 :NONAME ( TAX IMPL   ) _A  C@   >NZ   _X  C! ; $AA BIND \ TAX i
 :NONAME ( TXA IMPL   ) _X  C@   >NZ   _A  C! ; $8A BIND \ TXA i

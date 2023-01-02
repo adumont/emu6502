@@ -96,13 +96,13 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 : UPDATE-FLAG ( b/f reg -- ) SWAP IF SET ELSE CLEAR THEN ;
 
 : >NZ  \ always updated together
-( >N ) ( b -- b ) DUP 'N AND 'N UPDATE-FLAG
-( >Z ) ( b -- b ) DUP     0= 'Z UPDATE-FLAG ;
-: >Z   ( b -- b ) DUP     0= 'Z UPDATE-FLAG ;
-: >D   ( f -- f ) DUP        'D UPDATE-FLAG ;
-: >V   ( f -- f ) DUP        'V UPDATE-FLAG ;
-: >C   ( f -- f )            'C UPDATE-FLAG ; \ this one is droppy
+( >N ) ( b -- b ) DUP         'N AND 'N UPDATE-FLAG
+( >Z ) ( b -- b ) DUP $FF AND     0= 'Z UPDATE-FLAG ;
+: >D   ( f -- f ) DUP                'D UPDATE-FLAG ;
+: >V   ( f -- f )                    'V UPDATE-FLAG ; \ this one is droppy
+: >C   ( f -- f )                    'C UPDATE-FLAG ; \ this one is droppy
 
+: C>   ( f -- f ) _P C@ 'C AND ;
 
 \ 65C02 Addressing Modes
 

@@ -2,24 +2,20 @@
 \ Copyright (C) 2021-2023 Alexandre Dumont <adumont@gmail.com>
 \ SPDX-License-Identifier: GPL-3.0-only
 \
-\ At the moment, host Forth is AlexFORTH on 6502
+\ Host Forth is gForth
 \ Target CPU is 65C02 variant
 
 HEX
 
-2 CONSTANT CELL
-
 \ Some compatibility words for gforth
-\ still need to change .( ) into ." "
-
-\ 8 CONSTANT CELL
-\ : print_nibble $F AND DUP $A >= IF $67 + THEN $30 XOR EMIT ;
-\ : C. $FF AND $10 /MOD print_nibble print_nibble ;
-\ : GETC BEGIN KEY? UNTIL KEY ;
-\ : 2+ 1+ 1+ ;
-\ : EXEC EXECUTE ;
-\ : NOT $FFFF XOR ;
-\ : NEG 0 SWAP - ;
+8 CONSTANT CELL
+: print_nibble $F AND DUP $A >= IF $67 + THEN $30 XOR EMIT ;
+: C. $FF AND $10 /MOD print_nibble print_nibble SPACE ;
+: GETC BEGIN KEY? UNTIL KEY ;
+: 2+ 1+ 1+ ;
+: EXEC EXECUTE ;
+: NEG 0 SWAP - ;
+: NOT NEG 1 - ;
 
 : C? C@ C. ;
 : CELLS CELL * ;
@@ -65,9 +61,12 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 
 1 VALUE TRACE  \ flag, show Status or not in NEXT
 
+: BIN. 8 0 DO DUP $80 AND IF ." 1" ELSE ." 0" THEN 2* LOOP SPACE ;
+
 : STATUS
-  .( A:) _A C? .( X:) _X C? .( Y:) _Y C?
-  .( P:) _P C? .( SP:) _SP C? .( PC:) _PC ? .( > ) DUMPPC CR ;
+  CR #17 spaces ." NV-BDIZC"
+  CR ." A:" _A C? ." X:" _X C? ." Y:" _Y C?
+     ." P:" _P C@ BIN. ." SP:" _SP C? ." PC:" _PC ? ." > " DUMPPC ;
 
 : NEXT
   ( FETCH   ) BYTE@

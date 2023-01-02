@@ -468,16 +468,15 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 : T?P ( b -- )      _P C@ T?= ;
 : T?MEM ( addr b -- )  SWAP TC@ T?= ;
 
-\-- store a minimal program
+\ -- store a minimal program
 
 : ORG   DUP TO THERE _PC! ;
 : _     TC, ;
 
 \ Test LDA IMM
-$0200 ORG
-0 _A C!
+$0200 ORG 0 _A C!
 A9 _ FF _   \ 0000 LDA #$FF
-NEXT $FF T?A $80 T?P
+NEXT $FF T?A $A0 T?P
 
 \ Test STA ABS
 $0200 ORG
@@ -498,6 +497,6 @@ NEXT 0222 FF T?MEM
 \ 8d ff 02  STA $02ff
 \ d0 f8     BNE $0600
 
-$0200 ORG AD _ FE _ 02 _ 1A _ 8D _ FF _ 02 _ D0 _ F7 _
+\ $0200 ORG AD _ FE _ 02 _ 1A _ 8D _ FF _ 02 _ D0 _ F7 _
 
-$0200 ORG 38 _ A9 _ A6 _ 4A _ 4A _ 4A _ 4A _ 4A _ 4A _ 4A _ 4A _ 4A _
+$0200 ORG 18 _ A9 _ 30 _ 69 _ 70 _

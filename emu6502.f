@@ -160,12 +160,6 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( BMI PCR    ) _P C@ 'N AND    ?BRA ; $30 BIND \ BMI r
 :NONAME ( BPL PCR    ) _P C@ 'N AND 0= ?BRA ; $10 BIND \ BPL r
 
-\ :NONAME ( BIT IMM    ) ; $89 BIND \ BIT #
-\ :NONAME ( BIT ABS    ) ; $2C BIND \ BIT a
-\ :NONAME ( BIT ABSX   ) ; $3C BIND \ BIT a,x
-\ :NONAME ( BIT ZP     ) ; $24 BIND \ BIT zp
-\ :NONAME ( BIT ZPX    ) ; $34 BIND \ BIT zp,x
-
 :NONAME ( SEC IMPL   ) 'C SET   ; $38 BIND \ SEC i
 :NONAME ( SED IMPL   ) 'D SET   ; $F8 BIND \ SED i
 :NONAME ( SEI IMPL   ) 'I SET   ; $78 BIND \ SEI i
@@ -222,11 +216,6 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( JMP ABS    ) WORD@            _PC! ; $4C BIND \ JMP a
 :NONAME ( JMP IND    ) WORD@         T@ _PC! ; $6C BIND \ JMP (a)
 :NONAME ( JMP AINDX  ) WORD@ _X C@ + T@ _PC! ; $7C BIND \ JMP (a,x)
-
-\ :NONAME ( JSR ABS    ) ; $20 BIND \ JSR a
-
-\ :NONAME ( RTI STCK   ) ; $40 BIND \ RTI s
-\ :NONAME ( RTS STCK   ) ; $60 BIND \ RTS s
 
 : LDA ( b -- ) >NZ _A C! ;
 :NONAME ( LDA IMM    ) BYTE@      LDA ; $A9 BIND \ LDA #
@@ -389,6 +378,11 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( TSX IMPL   ) _SP C@   >NZ   _X  C! ; $BA BIND \ TSX i
 :NONAME ( TXS IMPL   ) _X  C@         _SP C! ; $9A BIND \ TXS i
 
+\ :NONAME ( JSR ABS    ) ; $20 BIND \ JSR a
+
+\ :NONAME ( RTI STCK   ) ; $40 BIND \ RTI s
+\ :NONAME ( RTS STCK   ) ; $60 BIND \ RTS s
+
 \ :NONAME ( TRB ABS    ) ; $1C BIND \ TRB a
 \ :NONAME ( TRB ZP     ) ; $14 BIND \ TRB zp
 
@@ -397,6 +391,12 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 
 \ :NONAME ( STP IMPL   ) ; $DB BIND \ STP i
 \ :NONAME ( WAI IMPL   ) ; $CB BIND \ WAI i
+
+\ :NONAME ( BIT IMM    ) ; $89 BIND \ BIT #
+\ :NONAME ( BIT ABS    ) ; $2C BIND \ BIT a
+\ :NONAME ( BIT ABSX   ) ; $3C BIND \ BIT a,x
+\ :NONAME ( BIT ZP     ) ; $24 BIND \ BIT zp
+\ :NONAME ( BIT ZPX    ) ; $34 BIND \ BIT zp,x
 
 \ :NONAME ( SMB0 ZP    ) ; $87 BIND \ SMB0 zp
 \ :NONAME ( SMB1 ZP    ) ; $97 BIND \ SMB1 zp
@@ -424,6 +424,7 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 \ :NONAME ( BBR5 PCR   ) ; $5F BIND \ BBR5 r
 \ :NONAME ( BBR6 PCR   ) ; $6F BIND \ BBR6 r
 \ :NONAME ( BBR7 PCR   ) ; $7F BIND \ BBR7 r
+
 \ :NONAME ( BBS0 PCR   ) ; $8F BIND \ BBS0 r
 \ :NONAME ( BBS1 PCR   ) ; $9F BIND \ BBS1 r
 \ :NONAME ( BBS2 PCR   ) ; $AF BIND \ BBS2 r

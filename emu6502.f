@@ -461,7 +461,7 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 \ :NONAME ( BBS7 PCR   ) ; $FF BIND \ BBS7 r
 
 \ TESTS
-: T?= ( a b -- )    = 0= IF CR .( ** ERROR ** ) CR ABORT THEN ;
+: T?= ( a b -- )    = 0= IF CR ." ** ERROR ** " CR ABORT THEN ;
 : T?A ( b -- )      _A C@ T?= ;
 : T?X ( b -- )      _X C@ T?= ;
 : T?Y ( b -- )      _Y C@ T?= ;

@@ -21,7 +21,7 @@ HEX
 \ : CELLS CELL * ;
 
 CREATE _A  0 C,   CREATE _X  0 C,   CREATE _Y    0 C,
-CREATE _SP 0 C,   CREATE _PC 0  ,   CREATE _P  $20 C,
+CREATE _SP 0 C,   CREATE _PC 0  ,   CREATE _P  $30 C,
 
 CREATE OPCODES #256 CELLS ALLOT
 CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
@@ -476,7 +476,7 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 \ Test LDA IMM
 $0200 ORG 0 _A C!
 A9 _ FF _   \ 0000 LDA #$FF
-NEXT $FF T?A $A0 T?P
+NEXT $FF T?A $B0 T?P
 
 \ Test STA ABS
 $0200 ORG
@@ -499,4 +499,4 @@ NEXT 0222 FF T?MEM
 
 \ $0200 ORG AD _ FE _ 02 _ 1A _ 8D _ FF _ 02 _ D0 _ F7 _
 
-$0200 ORG 18 _ A9 _ 30 _ 69 _ 70 _
+\ $0200 ORG 18 _ A9 _ 30 _ 69 _ 70 _

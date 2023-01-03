@@ -332,9 +332,23 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( ROL ZPX    ) 'ZPX  ROL ; $36 BIND \ ROL zp,x
 
 \ Info on overflow (V) flag here https://www.righto.com/2012/12/the-6502-overflow-flag-explained.html
-: BIN-ADC ( byte -- ) \ Binary ADC
-  DUP _A C@ DUP -ROT + C> + $100 /MOD >C DUP >R XOR SWAP R@ XOR AND $80 AND >V R> >NZ _A C! ;
-: ADC BIN-ADC ;
+
+: >BIN ( bcd -- bin ) D> IF $FF AND $10 /MOD #10 * + THEN ; \ only when Decimal flag is set
+: >BCD ( bin -- bcd ) D> IF #100 /MOD $100 * SWAP #10 /MOD  $10 * + + THEN ;
+
+\ this version has something wrong with the overflow flag logic
+\ : ADC ( byte -- )
+\   >BIN DUP _A C@ >BIN DUP -ROT + C> + >BCD ( >BCD here ? )
+\   $100 /MOD >C >NZ ( set NZ and C flags )
+\   DUP ( or >BCD here ? )_A C!
+\   SWAP OVER XOR -ROT XOR AND $80 AND >V ( set overflow flag ) ;
+
+\ : OVERFLOW? ( data -- data ) DUP DUP -$80 <= SWAP $7F >= OR >V ; \non-droppy
+
+: ADC ( byte -- )
+  DUP >BIN _A C@ DUP >BIN -ROT + C> + >BCD
+  $100 /MOD >C DUP LDA
+  SWAP OVER XOR -ROT XOR AND $80 AND >V ( set overflow flag ) ;
 
 :NONAME ( ADC IMM    ) BYTE@      ADC ; $69 BIND \ ADC #
 :NONAME ( ADC ZP     ) 'ZP    TC@ ADC ; $65 BIND \ ADC zp
@@ -346,21 +360,20 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( ADC ZIND   ) 'ZIND  TC@ ADC ; $72 BIND \ ADC (zp)
 :NONAME ( ADC INDY   ) 'INDY  TC@ ADC ; $71 BIND \ ADC (zp),y
 
-\ : COMP ( byte ) DUP 80 AND IF $FF NOT OR THEN ; \ complement if byte is neg  00F1 -> $FFFFFFF1
-
-\ : BIN-SBC ( byte -- ) \ Binary SBC
-\   \ like ADC but we NOT the operand. Also we need to pad A with 1s
-\   \ on the left if negative (as our Forth arith is >8 bits!!)
-\   NOT DUP _A C@ COMP
-\   DUP -ROT + C> + $100 /MOD >C DUP >R XOR SWAP R@ XOR AND $80 AND >V R> >NZ _A C! ;
-
 \ SBC: performs A + 1complement(operand) + Carry, updates flags and A per the result
 : BIN-SBC ( byte -- ) \ Binary SBC
   \ like ADC but we NOT the operand
   NOT $FF AND DUP _A C@ DUP -ROT + C> +
   $100 /MOD >C DUP >R XOR SWAP R@ XOR AND $80 AND >V R> >NZ _A C! ;
 
-: SBC BIN-SBC ;
+: COMP 1+ 0 SWAP - ;
+
+: SBC ( byte -- )
+  >BIN NOT $FF AND DUP _A C@ >BIN DUP -ROT + C> +
+  $100 /MOD >C >NZ ( set NZ and C flags )
+  DUP >BCD _A C!
+  SWAP OVER XOR -ROT XOR AND $80 AND >V ( set overflow flag ) ;
+
 :NONAME ( SBC IMM    ) BYTE@      SBC ; $E9 BIND \ SBC #
 :NONAME ( SBC ZP     ) 'ZP    TC@ SBC ; $E5 BIND \ SBC zp
 :NONAME ( SBC ABS    ) 'ABS   TC@ SBC ; $ED BIND \ SBC a

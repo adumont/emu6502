@@ -8,7 +8,6 @@
 HEX
 
 \ Some compatibility words for gforth
-8 CONSTANT CELL
 : print_nibble $F AND DUP $A >= IF $67 + THEN $30 XOR EMIT ;
 : C. $FF AND $10 /MOD print_nibble print_nibble SPACE ;
 : GETC BEGIN KEY? UNTIL KEY ;
@@ -16,9 +15,10 @@ HEX
 : EXEC EXECUTE ;
 : NEG 0 SWAP - ;
 : NOT NEG 1 - ;
+: CLS CLEARSTACK ;
 
 : C? C@ C. ;
-: CELLS CELL * ;
+\ : CELLS CELL * ;
 
 CREATE _A  0 C,   CREATE _X  0 C,   CREATE _Y    0 C,
 CREATE _SP 0 C,   CREATE _PC 0  ,   CREATE _P  $20 C,

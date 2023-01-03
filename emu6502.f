@@ -61,7 +61,7 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 
 1 VALUE TRACE  \ flag, show Status or not in NEXT
 
-: BIN. 8 0 DO DUP $80 AND IF ." 1" ELSE ." 0" THEN 2* LOOP SPACE ;
+: BIN. 8 0 DO DUP $80 AND IF ." 1" ELSE ." 0" THEN 2* LOOP DROP SPACE ;
 
 : STATUS
   CR #17 spaces ." NV-BDIZC"

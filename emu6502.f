@@ -345,10 +345,12 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 
 \ : OVERFLOW? ( data -- data ) DUP DUP -$80 <= SWAP $7F >= OR >V ; \non-droppy
 
+: V? ( bcdM bcdA bcdResult -- v ) SWAP OVER XOR -ROT XOR AND $80 AND ;
+
 : ADC ( byte -- )
   DUP >BIN _A C@ DUP >BIN -ROT + C> + >BCD
   $100 /MOD >C DUP LDA
-  SWAP OVER XOR -ROT XOR AND $80 AND >V ( set overflow flag ) ;
+  V? >V ( set overflow flag ) ;
 
 :NONAME ( ADC IMM    ) BYTE@      ADC ; $69 BIND \ ADC #
 :NONAME ( ADC ZP     ) 'ZP    TC@ ADC ; $65 BIND \ ADC zp
@@ -360,26 +362,24 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( ADC ZIND   ) 'ZIND  TC@ ADC ; $72 BIND \ ADC (zp)
 :NONAME ( ADC INDY   ) 'INDY  TC@ ADC ; $71 BIND \ ADC (zp),y
 
-: V? ( bcdM bcdA bcdResult -- v ) SWAP OVER XOR -ROT XOR AND $80 AND ;
+\ : BIN-SBC ( byte -- )
+\   NOT $FF AND DUP _A C@ DUP ROT + C> +
+\   $100 /MOD >C DUP
+\   LDA
+\   V? >V ;
 
-: BIN-SBC ( byte -- )
-  NOT $FF AND DUP _A C@ DUP ROT + C> +
-  $100 /MOD >C DUP
-  LDA
-  V? >V ;
+\ : BCD-SBC ( byte -- )
+\   DUP >BIN
+\   _A C@ DUP >BIN #100 +
+\   ROT - C> - 1+
+\   DUP >BCD $100 /MOD >C ( carry )
+\   LDA
+\   ROT NOT $FF AND -ROT \ 1complement the operand before calculing V
+\   V? >V ;
 
-: BCD-SBC ( byte -- )
-  DUP >BIN
-  _A C@ DUP >BIN #100 +
-  ROT - C> - 1+
-  DUP >BCD $100 /MOD >C ( carry )
-  LDA
-  ROT NOT $FF AND -ROT \ 1complement the operand before calculing V
-  V? >V ;
+\ : SBC1 D> IF BCD-SBC ELSE BIN-SBC THEN ;
 
-: SBC D> IF BCD-SBC ELSE BIN-SBC THEN ;
-
-: SBC2 ( byte -- )
+: SBC ( byte -- )
   DUP >BIN
   _A C@ DUP >BIN
   D> IF #100 ELSE $100 THEN + \ because my >BIN works only on 1 byte, $100 >BIN is $00
@@ -528,3 +528,24 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 \ $0200 ORG AD _ FE _ 02 _ 1A _ 8D _ FF _ 02 _ D0 _ F7 _
 
 \ $0200 ORG 18 _ A9 _ 30 _ 69 _ 70 _
+
+
+\ Test SBC
+
+: TEST-SBC
+  $100 0 DO
+    CLS 'C SET 'D CLEAR 10 LDA
+    CR _P C@ BIN. _A C? I C.
+    I SBC
+    ." SBC -> " _A C? _P C@ BIN.
+  LOOP
+;
+
+: TEST-ADC
+  $100 0 DO
+    CLS 'C CLEAR 'D CLEAR 10 LDA
+    CR _P C@ BIN. _A C? I C.
+    I ADC
+    ." ADC -> " _A C? _P C@ BIN.
+  LOOP
+;

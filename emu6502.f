@@ -360,19 +360,34 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( ADC ZIND   ) 'ZIND  TC@ ADC ; $72 BIND \ ADC (zp)
 :NONAME ( ADC INDY   ) 'INDY  TC@ ADC ; $71 BIND \ ADC (zp),y
 
-\ SBC: performs A + 1complement(operand) + Carry, updates flags and A per the result
-: BIN-SBC ( byte -- ) \ Binary SBC
-  \ like ADC but we NOT the operand
-  NOT $FF AND DUP _A C@ DUP -ROT + C> +
-  $100 /MOD >C DUP >R XOR SWAP R@ XOR AND $80 AND >V R> >NZ _A C! ;
+: V? ( bcdM bcdA bcdResult -- v ) SWAP OVER XOR -ROT XOR AND $80 AND ;
 
-: COMP 1+ 0 SWAP - ;
+: BIN-SBC ( byte -- )
+  NOT $FF AND DUP _A C@ DUP ROT + C> +
+  $100 /MOD >C DUP
+  LDA
+  V? >V ;
 
-: SBC ( byte -- )
-  >BIN NOT $FF AND DUP _A C@ >BIN DUP -ROT + C> +
-  $100 /MOD >C >NZ ( set NZ and C flags )
-  DUP >BCD _A C!
-  SWAP OVER XOR -ROT XOR AND $80 AND >V ( set overflow flag ) ;
+: BCD-SBC ( byte -- )
+  DUP >BIN
+  _A C@ DUP >BIN #100 +
+  ROT - C> - 1+
+  DUP >BCD $100 /MOD >C ( carry )
+  LDA
+  ROT NOT $FF AND -ROT \ 1complement the operand before calculing V
+  V? >V ;
+
+: SBC D> IF BCD-SBC ELSE BIN-SBC THEN ;
+
+: SBC2 ( byte -- )
+  DUP >BIN
+  _A C@ DUP >BIN
+  D> IF #100 ELSE $100 THEN + \ because my >BIN works only on 1 byte, $100 >BIN is $00
+  ROT - C> - 1+
+  DUP >BCD $100 /MOD 1 = >C ( carry )
+  LDA
+  ROT NOT FF AND -ROT \ 1complement the operand before calculing V
+  V? >V ;
 
 :NONAME ( SBC IMM    ) BYTE@      SBC ; $E9 BIND \ SBC #
 :NONAME ( SBC ZP     ) 'ZP    TC@ SBC ; $E5 BIND \ SBC zp
@@ -487,15 +502,15 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 : _     TC, ;
 
 \ Test LDA IMM
-$0200 ORG 0 _A C!
-A9 _ FF _   \ 0000 LDA #$FF
-NEXT $FF T?A $B0 T?P
+\ $0200 ORG 0 _A C!
+\ A9 _ FF _   \ 0000 LDA #$FF
+\ NEXT $FF T?A $B0 T?P
 
 \ Test STA ABS
-$0200 ORG
-0 0222 TC!
-8D _ 22 _ 02 _  \ 0002 STA $0222
-NEXT 0222 FF T?MEM
+\ $0200 ORG
+\ 0 0222 TC!
+\ 8D _ 22 _ 02 _  \ 0002 STA $0222
+\ NEXT 0222 FF T?MEM
 
 \ Test LDX, BNE, DEX
 \ $0200    a2 0a     LDX #$0a

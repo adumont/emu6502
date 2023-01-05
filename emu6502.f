@@ -23,6 +23,8 @@ HEX
 CREATE _A  0 C,   CREATE _X  0 C,   CREATE _Y    0 C,
 CREATE _SP 0 C,   CREATE _PC 0  ,   CREATE _P  $30 C,
 
+: LDP  ( byte -- ) $30 OR _P C! ;
+
 CREATE OPCODES #256 CELLS ALLOT
 CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 \ 0000-00FF ZP
@@ -282,10 +284,10 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( PHP STCK   ) _P C@ PUSH ; $08 BIND \ PHP s
 
 : PULL ( reg -- ) _SP C@ 1+ DUP _SP C! $0100 OR TC@ ;
-:NONAME ( PLA STCK   ) PULL LDA                      ; $68 BIND \ PLA s
-:NONAME ( PLX STCK   ) PULL LDX                      ; $FA BIND \ PLX s
-:NONAME ( PLY STCK   ) PULL LDY                      ; $7A BIND \ PLY s
-:NONAME ( PLP STCK   ) PULL _P C! _P C@ $20 OR _P C! ; $28 BIND \ PLP s
+:NONAME ( PLA STCK   ) PULL LDA ; $68 BIND \ PLA s
+:NONAME ( PLX STCK   ) PULL LDX ; $FA BIND \ PLX s
+:NONAME ( PLY STCK   ) PULL LDY ; $7A BIND \ PLY s
+:NONAME ( PLP STCK   ) PULL LDP ; $28 BIND \ PLP s
 
 \ ASL C <- [76543210] <- 0      N	Z	C
 
@@ -435,8 +437,8 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 
 :NONAME ( JSR ABS    ) _PC @ 2+ $FFFF AND $100 /MOD ( PCH ) PUSH ( PCL ) PUSH ; $20 BIND \ JSR a
 
-:NONAME ( RTS STCK   )     PULL ( PCL ) PULL ( PCH ) $100 * OR 1+ _PC! ; $60 BIND \ RTS s
-:NONAME ( RTI STCK   ) PLP PULL ( PCL ) PULL ( PCH ) $100 * OR    _PC! ; $40 BIND \ RTI s
+:NONAME ( RTS STCK   )                PULL ( PCL ) PULL ( PCH ) $100 * OR 1+ _PC! ; $60 BIND \ RTS s
+:NONAME ( RTI STCK   ) PULL ( P ) LDP PULL ( PCL ) PULL ( PCH ) $100 * OR    _PC! ; $40 BIND \ RTI s
 
 \ TRB A & M -> Z, !A & M -> M
 : TRB ( addr -- ) DUP TC@ _A C@ 2DUP AND >Z DROP NOT AND SWAP TC! ;

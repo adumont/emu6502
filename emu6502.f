@@ -256,7 +256,7 @@ DEFER BREAKPOINT
 :NONAME ( LDY ABSX   ) 'ABSX  TC@ LDY ; $BC BIND \ LDY a,x
 :NONAME ( LDY ZPX    ) 'ZPX   TC@ LDY ; $B4 BIND \ LDY zp,x
 
-: STY ( addr -- ) _X C@ SWAP TC! ;
+: STY ( addr -- ) _Y C@ SWAP TC! ;
 :NONAME ( STY ABS    ) 'ABS       STY ; $8C BIND \ STY a
 :NONAME ( STY ZP     ) 'ZP        STY ; $84 BIND \ STY zp
 :NONAME ( STY ZPX    ) 'ZPX       STY ; $94 BIND \ STY zp,x

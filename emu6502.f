@@ -95,11 +95,11 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 : SET   ( mask -- )     _P C@ OR  _P C! ;
 : UPDATE-FLAG ( b/f reg -- ) SWAP IF SET ELSE CLEAR THEN ;
 
-: >NZ  \ always updated together
-( >N ) ( b -- b ) DUP         'N AND 'N UPDATE-FLAG
-( >Z ) ( b -- b ) DUP $FF AND     0= 'Z UPDATE-FLAG ;
+: >N   ( b -- b ) DUP         'N AND 'N UPDATE-FLAG ; \ non-droppy
+: >Z   ( b -- b ) DUP $FF AND     0= 'Z UPDATE-FLAG ; \ non-droppy
 : >V   ( f --   )                    'V UPDATE-FLAG ; \ this one is droppy
 : >C   ( f --   )                    'C UPDATE-FLAG ; \ this one is droppy
+: >NZ >N >Z ;
 
 : C>   (   -- f ) _P C@ 'C AND ;
 : D>   (   -- f ) _P C@ 'D AND ;

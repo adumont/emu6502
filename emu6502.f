@@ -60,6 +60,7 @@ $F001 CONSTANT OUT_CHAR
 ;
 
 : DUMPPC _PC @ DUP 3 + SWAP DO I TC@ C. LOOP ;
+: TDUMP ( t-addr n -- ) SWAP RAM + SWAP DUMP ;
 
 1 VALUE TRACE  \ flag, show Status or not in NEXT
 

@@ -332,6 +332,7 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( ROL ZPX    ) 'ZPX  ROL ; $36 BIND \ ROL zp,x
 
 \ Info on overflow (V) flag here https://www.righto.com/2012/12/the-6502-overflow-flag-explained.html
+\ Info on decimal mode (BCD) http://www.6502.org/tutorials/decimal_mode.html#B
 
 : >BIN ( bcd -- bin ) D> IF $FF AND $10 /MOD #10 * + THEN ; \ only when Decimal flag is set
 : >BCD ( bin -- bcd ) D> IF #100 /MOD $100 * SWAP #10 /MOD  $10 * + + THEN ;

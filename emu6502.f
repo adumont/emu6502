@@ -70,16 +70,33 @@ CREATE RAM $10000 ALLOT \ Full 6502 memory space
   CR ." A:" _A C? ." X:" _X C? ." Y:" _Y C?
      ." P:" _P C@ BIN. ." SP:" _SP C? ." PC:" _PC ? ." > " DUMPPC ;
 
+-1 VALUE LASTINSTR
+
 : NEXT
-  ( FETCH   ) BYTE@
+  ( FETCH   ) BYTE@ DUP TO LASTINSTR
   ( DECODE  ) CELLS OPCODES + @
   ( EXECUTE ) EXEC
   TRACE IF STATUS THEN ;
 
+DEFER BREAKPOINT
+
+\ examples breakpoints words:
+\ :NONAME _A C@ 1 = ; IS BREAKPOINT \ break when A=1
+\ :NONAME C>    1 = ; IS BREAKPOINT \ break when C is set
+
+\ Default breakpoint is when last instr. was BRK ($00)
+:NONAME LASTINSTR $00 = ; IS BREAKPOINT
+
+\ run until breakpoint is reached
 : RUN ( n -- )
-  TRACE >R      \ save TRACE
-  0 TO TRACE    \ no trace
-  ( n ) 0 DO NEXT LOOP
+  TRACE >R         \ save TRACE
+   0 TO TRACE      \ no trace
+  -1 TO LASTINSTR  \ reset last instr to -1
+  BEGIN
+    BREAKPOINT 0=
+  WHILE
+    NEXT
+  REPEAT
   R> TO TRACE ; \ restore TRACE
 
 : BIND ( xt opcode -- )   CELLS OPCODES + ! ; \ saves XT in OPCODES table

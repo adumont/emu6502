@@ -433,10 +433,10 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( TSX IMPL   ) _SP C@   >NZ   _X  C! ; $BA BIND \ TSX i
 :NONAME ( TXS IMPL   ) _X  C@         _SP C! ; $9A BIND \ TXS i
 
-\ :NONAME ( JSR ABS    ) ; $20 BIND \ JSR a
+:NONAME ( JSR ABS    ) _PC @ 2+ $FFFF AND $100 /MOD ( PCH ) PUSH ( PCL ) PUSH ; $20 BIND \ JSR a
 
-\ :NONAME ( RTI STCK   ) ; $40 BIND \ RTI s
-\ :NONAME ( RTS STCK   ) ; $60 BIND \ RTS s
+:NONAME ( RTS STCK   )     PULL ( PCL ) PULL ( PCH ) $100 * OR 1+ _PC! ; $60 BIND \ RTS s
+:NONAME ( RTI STCK   ) PLP PULL ( PCL ) PULL ( PCH ) $100 * OR    _PC! ; $40 BIND \ RTI s
 
 \ :NONAME ( TRB ABS    ) ; $1C BIND \ TRB a
 \ :NONAME ( TRB ZP     ) ; $14 BIND \ TRB zp

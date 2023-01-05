@@ -26,7 +26,7 @@ CREATE _SP 0 C,   CREATE _PC 0  ,   CREATE _P  $30 C,
 : LDP  ( byte -- ) $30 OR _P C! ;
 
 CREATE OPCODES #256 CELLS ALLOT
-CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
+CREATE RAM $10000 ALLOT \ Full 6502 memory space
 \ 0000-00FF ZP
 \ 0100-01FF 6502 Stack
 \ 0200-02FD user memory

@@ -275,17 +275,17 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 
 :NONAME ( NOP IMPL   ) ; $EA BIND \ NOP i
 
-: PUSH ( reg -- ) C@ _SP C@ SWAP OVER $0100 OR TC! 1 - _SP C! ;
-:NONAME ( PHA STCK   ) _A PUSH ; $48 BIND \ PHA s
-:NONAME ( PHX STCK   ) _X PUSH ; $DA BIND \ PHX s
-:NONAME ( PHY STCK   ) _Y PUSH ; $5A BIND \ PHY s
-:NONAME ( PHP STCK   ) _P PUSH ; $08 BIND \ PHP s
+: PUSH ( byte -- ) _SP C@ SWAP OVER $0100 OR TC! 1 - _SP C! ;
+:NONAME ( PHA STCK   ) _A C@ PUSH ; $48 BIND \ PHA s
+:NONAME ( PHX STCK   ) _X C@ PUSH ; $DA BIND \ PHX s
+:NONAME ( PHY STCK   ) _Y C@ PUSH ; $5A BIND \ PHY s
+:NONAME ( PHP STCK   ) _P C@ PUSH ; $08 BIND \ PHP s
 
-: PULL ( reg -- ) _SP C@ 1+ DUP _SP C! $0100 OR TC@ >NZ SWAP C! ;
-:NONAME ( PLA STCK   ) _A PULL                    ; $68 BIND \ PLA s
-:NONAME ( PLX STCK   ) _X PULL                    ; $FA BIND \ PLX s
-:NONAME ( PLY STCK   ) _Y PULL                    ; $7A BIND \ PLY s
-:NONAME ( PLP STCK   ) _P PULL _P C@ $20 OR _P C! ; $28 BIND \ PLP s
+: PULL ( reg -- ) _SP C@ 1+ DUP _SP C! $0100 OR TC@ ;
+:NONAME ( PLA STCK   ) PULL LDA                      ; $68 BIND \ PLA s
+:NONAME ( PLX STCK   ) PULL LDX                      ; $FA BIND \ PLX s
+:NONAME ( PLY STCK   ) PULL LDY                      ; $7A BIND \ PLY s
+:NONAME ( PLP STCK   ) PULL _P C! _P C@ $20 OR _P C! ; $28 BIND \ PLP s
 
 \ ASL C <- [76543210] <- 0      N	Z	C
 

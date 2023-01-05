@@ -446,7 +446,7 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 :NONAME ( TRB ZP     ) 'ZP  TRB ; $14 BIND \ TRB zp
 
 \ TSB A & M -> Z, A | M -> M
-: TRB ( addr -- ) DUP TC@ _A C@ 2DUP AND >Z DROP      OR SWAP TC! ;
+: TSB ( addr -- ) DUP TC@ _A C@ 2DUP AND >Z DROP      OR SWAP TC! ;
 :NONAME ( TSB ABS    ) 'ABS TSB ; $0C BIND \ TSB a
 :NONAME ( TSB ZP     ) 'ZP  TRB ; $04 BIND \ TSB zp
 

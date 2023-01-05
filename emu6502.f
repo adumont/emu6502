@@ -250,7 +250,7 @@ DEFER BREAKPOINT
 :NONAME ( STX ZPY    ) 'ZPY       STX ; $96 BIND \ STX zp,y
 
 : LDY ( b -- ) >NZ _Y C! ;
-:NONAME ( LDY IMM    ) BYTE@                        LDY ; $A0 BIND \ LDY #
+:NONAME ( LDY IMM    ) BYTE@      LDY ; $A0 BIND \ LDY #
 :NONAME ( LDY ZP     ) 'ZP    TC@ LDY ; $A4 BIND \ LDY zp
 :NONAME ( LDY ABS    ) 'ABS   TC@ LDY ; $AC BIND \ LDY a
 :NONAME ( LDY ABSX   ) 'ABSX  TC@ LDY ; $BC BIND \ LDY a,x
@@ -633,8 +633,7 @@ $8000 s" forth-emu.bin" load-rom
 : RESET $FFFC T@ _PC! ;
 reset
 
-\ : mybrk _PC @ 8F3A = ;
-\ ' mybrk IS BREAKPOINT
+\ : mybrk _PC @ 8562 = ; ' mybrk IS BREAKPOINT
 
 
 

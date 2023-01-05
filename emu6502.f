@@ -453,29 +453,32 @@ CREATE RAM $100 3 * ALLOT \ 3 pages of RAM
 \ :NONAME ( STP IMPL   ) ; $DB BIND \ STP i
 \ :NONAME ( WAI IMPL   ) ; $CB BIND \ WAI i
 
-\ :NONAME ( BIT IMM    ) ; $89 BIND \ BIT #
-\ :NONAME ( BIT ABS    ) ; $2C BIND \ BIT a
-\ :NONAME ( BIT ABSX   ) ; $3C BIND \ BIT a,x
-\ :NONAME ( BIT ZP     ) ; $24 BIND \ BIT zp
-\ :NONAME ( BIT ZPX    ) ; $34 BIND \ BIT zp,x
+: BIT ( byte -- ) >N DUP 'V AND >V _A C@ AND >Z ;
+:NONAME ( BIT IMM    ) BYTE@     BIT ; $89 BIND \ BIT #
+:NONAME ( BIT ABS    ) 'ABS  TC@ BIT ; $2C BIND \ BIT a
+:NONAME ( BIT ZP     ) 'ZP   TC@ BIT ; $24 BIND \ BIT zp
+:NONAME ( BIT ABSX   ) 'ABSX TC@ BIT ; $3C BIND \ BIT a,x
+:NONAME ( BIT ZPX    ) 'ZPX  TC@ BIT ; $34 BIND \ BIT zp,x
 
-\ :NONAME ( SMB0 ZP    ) ; $87 BIND \ SMB0 zp
-\ :NONAME ( SMB1 ZP    ) ; $97 BIND \ SMB1 zp
-\ :NONAME ( SMB2 ZP    ) ; $A7 BIND \ SMB2 zp
-\ :NONAME ( SMB3 ZP    ) ; $B7 BIND \ SMB3 zp
-\ :NONAME ( SMB4 ZP    ) ; $C7 BIND \ SMB4 zp
-\ :NONAME ( SMB5 ZP    ) ; $D7 BIND \ SMB5 zp
-\ :NONAME ( SMB6 ZP    ) ; $E7 BIND \ SMB6 zp
-\ :NONAME ( SMB7 ZP    ) ; $F7 BIND \ SMB7 zp
+: SMB ( addr mask -- ) OVER TC@ OR SWAP TC! ;
+:NONAME ( SMB0 ZP    ) 'ZP %00000001 SMB ; $87 BIND \ SMB0 zp
+:NONAME ( SMB1 ZP    ) 'ZP %00000010 SMB ; $97 BIND \ SMB1 zp
+:NONAME ( SMB2 ZP    ) 'ZP %00000100 SMB ; $A7 BIND \ SMB2 zp
+:NONAME ( SMB3 ZP    ) 'ZP %00001000 SMB ; $B7 BIND \ SMB3 zp
+:NONAME ( SMB4 ZP    ) 'ZP %00010000 SMB ; $C7 BIND \ SMB4 zp
+:NONAME ( SMB5 ZP    ) 'ZP %00100000 SMB ; $D7 BIND \ SMB5 zp
+:NONAME ( SMB6 ZP    ) 'ZP %01000000 SMB ; $E7 BIND \ SMB6 zp
+:NONAME ( SMB7 ZP    ) 'ZP %10000000 SMB ; $F7 BIND \ SMB7 zp
 
-\ :NONAME ( RMB0 ZP    ) ; $07 BIND \ RMB0 zp
-\ :NONAME ( RMB1 ZP    ) ; $17 BIND \ RMB1 zp
-\ :NONAME ( RMB2 ZP    ) ; $27 BIND \ RMB2 zp
-\ :NONAME ( RMB3 ZP    ) ; $37 BIND \ RMB3 zp
-\ :NONAME ( RMB4 ZP    ) ; $47 BIND \ RMB4 zp
-\ :NONAME ( RMB5 ZP    ) ; $57 BIND \ RMB5 zp
-\ :NONAME ( RMB6 ZP    ) ; $67 BIND \ RMB6 zp
-\ :NONAME ( RMB7 ZP    ) ; $77 BIND \ RMB7 zp
+: RMB ( addr mask -- ) OVER TC@ AND SWAP TC! ;
+:NONAME ( RMB0 ZP    ) 'ZP %11111110 RMB ; $07 BIND \ RMB0 zp
+:NONAME ( RMB1 ZP    ) 'ZP %11111101 RMB ; $17 BIND \ RMB1 zp
+:NONAME ( RMB2 ZP    ) 'ZP %11111011 RMB ; $27 BIND \ RMB2 zp
+:NONAME ( RMB3 ZP    ) 'ZP %11110111 RMB ; $37 BIND \ RMB3 zp
+:NONAME ( RMB4 ZP    ) 'ZP %11101111 RMB ; $47 BIND \ RMB4 zp
+:NONAME ( RMB5 ZP    ) 'ZP %11011111 RMB ; $57 BIND \ RMB5 zp
+:NONAME ( RMB6 ZP    ) 'ZP %10111111 RMB ; $67 BIND \ RMB6 zp
+:NONAME ( RMB7 ZP    ) 'ZP %01111111 RMB ; $77 BIND \ RMB7 zp
 
 \ :NONAME ( BBR0 PCR   ) ; $0F BIND \ BBR0 r
 \ :NONAME ( BBR1 PCR   ) ; $1F BIND \ BBR1 r

@@ -98,7 +98,8 @@ DEFER BREAKPOINT
   WHILE
     NEXT
   REPEAT
-  R> TO TRACE ; \ restore TRACE
+  R> TO TRACE      \ restore TRACE
+  STATUS ;
 
 : BIND ( xt opcode -- )   CELLS OPCODES + ! ; \ saves XT in OPCODES table
 

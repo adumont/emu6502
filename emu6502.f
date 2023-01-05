@@ -601,3 +601,40 @@ DEFER BREAKPOINT
 A2 _ FF _ 9A _ A0 _ 0A _ 20 _ 11 _ 06 _ 18 _
 69 _ 01 _ 20 _ 15 _ 06 _ 88 _ D0 _ F4 _ AD _
 FE _ 02 _ 60 _ 8D _ FF _ 02 _ 60 _
+
+0 VALUE FD
+0 VALUE LEN
+\ S" test.bin" R/O OPEN-FILE THROW TO FD
+
+\ load binary rom file to target addr
+: load-rom ( t-addr filename )
+  0 to fd
+  R/O OPEN-FILE THROW TO FD
+  DUP RAM +     ( addr in host )
+  $10000 ROT -  ( max chars to read )
+  FD            ( fd )
+  read-file throw TO LEN
+;
+
+\ 0600 s" rom.bin" load-rom
+
+\ create file-buffer $10000 allot
+
+\ file-buffer $10000 FD read-file throw TO LEN
+
+\ : read-byte ( addr len )
+\   >R >R 0 0 R> R>
+\   >NUMBER
+\   >R >R DROP R> R> SWAP 1+ SWAP 1- ROT
+\ ;
+
+: n next ;
+$8000 s" forth-emu.bin" load-rom
+: RESET $FFFC T@ _PC! ;
+reset
+
+\ : mybrk _PC @ 8F3A = ;
+\ ' mybrk IS BREAKPOINT
+
+
+

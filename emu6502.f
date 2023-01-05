@@ -435,7 +435,7 @@ CREATE RAM $10000 ALLOT \ Full 6502 memory space
 :NONAME ( TSX IMPL   ) _SP C@   >NZ   _X  C! ; $BA BIND \ TSX i
 :NONAME ( TXS IMPL   ) _X  C@         _SP C! ; $9A BIND \ TXS i
 
-:NONAME ( JSR ABS    ) _PC @ 2+ $FFFF AND $100 /MOD ( PCH ) PUSH ( PCL ) PUSH ; $20 BIND \ JSR a
+:NONAME ( JSR ABS    ) _PC @ 1+ $FFFF AND $100 /MOD ( PCH ) PUSH ( PCL ) PUSH WORD@ _PC! ; $20 BIND \ JSR a
 
 :NONAME ( RTS STCK   )                PULL ( PCL ) PULL ( PCH ) $100 * OR 1+ _PC! ; $60 BIND \ RTS s
 :NONAME ( RTI STCK   ) PULL ( P ) LDP PULL ( PCL ) PULL ( PCH ) $100 * OR    _PC! ; $40 BIND \ RTI s
@@ -561,3 +561,24 @@ CREATE RAM $10000 ALLOT \ Full 6502 memory space
     ." ADC -> " _A C? _P C@ BIN.
   LOOP
 ;
+
+\ Address  Hexdump   Dissassembly
+\ -------------------------------
+\ $0600    a2 ff     LDX #$ff
+\ $0602    9a        TXS
+\ $0603    a0 0a     LDY #$0a
+\ $0605    20 11 06  JSR $0611
+\ $0608    18        CLC
+\ $0609    69 01     ADC #$01
+\ $060b    20 15 06  JSR $0615
+\ $060e    88        DEY
+\ $060f    d0 f4     BNE $0605
+\ $0611    ad fe 02  LDA $02fe
+\ $0614    60        RTS
+\ $0615    8d ff 02  STA $02ff
+\ $0618    60        RTS
+
+0600 ORG
+A2 _ FF _ 9A _ A0 _ 0A _ 20 _ 11 _ 06 _ 18 _
+69 _ 01 _ 20 _ 15 _ 06 _ 88 _ D0 _ F4 _ AD _
+FE _ 02 _ 60 _ 8D _ FF _ 02 _ 60 _

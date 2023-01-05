@@ -405,7 +405,7 @@ DEFER BREAKPOINT
   DUP >BIN
   _A C@ DUP >BIN
   D> IF #100 ELSE $100 THEN + \ because my >BIN works only on 1 byte, $100 >BIN is $00
-  ROT - C> - 1+
+  ROT - C> + 1-
   DUP >BCD $100 /MOD 1 = >C ( carry )
   LDA
   ROT NOT FF AND -ROT \ 1complement the operand before calculing V

@@ -639,11 +639,55 @@ FE _ 02 _ 60 _ 8D _ FF _ 02 _ 60 _
 \ ;
 
 : n next ;
-$8000 s" forth-emu.bin" load-rom
 : RESET $FFFC T@ _PC! ;
-reset
+: AlexForth $8000 s" forth-emu.bin" load-rom reset run ;
+: AlexMon   $8000 s" monitor/monitor.bin" load-rom reset run ;
+: Chatbot   $8000 s" chatbot/chatbot.bin" load-rom reset run ;
 
 \ : mybrk _PC @ 8562 = ; ' mybrk IS BREAKPOINT
 
+: s 0 TC! RUN 0 4 TDUMP 200 30 TDUMP ;
 
+: demo1
 
+  CR ." Address  Hexdump   Dissassembly"
+  CR ." -------------------------------"
+  CR ." $0600    a9 0a     LDA #$0a"
+  CR ." $0602    85 30     STA $30"
+  CR
+  0600 ORG a9 _ 0a _ 85 _ 30 _
+  00 _A C! 00 30 TC!
+  status
+  CR ." Use n to run step by step " CR
+;
+
+: demo2
+  CR ." Address  Hexdump   Dissassembly"
+  CR ." -------------------------------"
+  CR ." $0600    a2 61     LDX #$61"
+  CR ." $0602    8e 01 f0  STX $f001"
+  CR ." $0605    e8        INX"
+  CR ." $0606    e0 7b     CPX #$7b"
+  CR ." $0608    d0 f8     BNE $0602"
+  CR ." $060a    00        BRK"
+  CR
+  0600 ORG
+  a2 _ 61 _ 8e _ 01 _ f0 _ e8 _ e0 _ 7b _ d0 _ f8 _ 00 _
+  status
+;
+
+: demo3
+  CR ." Execute alexmon, goto $3000 and type:" CR
+  CR ." Address  Hexdump   Dissassembly"
+  CR ." -------------------------------"
+  CR ." $3000    a9 ff     LDA #$ff"
+  CR ." $3002    85 30     STA $30"
+  CR ." $3004    00        BRK"
+  CR
+  CR ." Then go back to 3000 and type j (JUMP)"
+  00 _A C! 00 30 TC!
+;
+
+: demo4
+  CR ." Execute alexforth" CR
+;

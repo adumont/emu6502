@@ -244,16 +244,14 @@ print_byte:
 	PLA
 	AND #$0F ; LO nibble
 	JSR nibble_value_to_asc
-	JSR putc
-	RTS
+	JMP putc
 
 CRLF:
 	; output a CR+LF
 	LDA #$0a ; CR
 	JSR putc
 	LDA #$0d ; LF
-	JSR putc
-	RTS
+	JMP putc
 
 getline:
 	LDX #0

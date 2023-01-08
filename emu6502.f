@@ -10,7 +10,8 @@ HEX
 \ Some compatibility words for gforth
 : print_nibble $F AND DUP $A >= IF $67 + THEN $30 XOR EMIT ;
 : C. $FF AND $10 /MOD print_nibble print_nibble SPACE ;
-: GETC BEGIN KEY? UNTIL KEY ;
+\ : GETC BEGIN KEY? UNTIL KEY ;   \ blocking
+: GETC KEY? IF KEY EXIT THEN 0 ;  \ non-blocking
 : 2+ 1+ 1+ ;
 : EXEC EXECUTE ;
 : NEG 0 SWAP - ;
@@ -31,16 +32,25 @@ CREATE RAM $10000 ALLOT \ Full 6502 memory space
 \ 0100-01FF 6502 Stack
 \ 0200-02FD user memory
 $F004 CONSTANT IN_CHAR
-$F001 CONSTANT OUT_CHAR
+$F001 CONSTANT OU_CHAR
 
 \ Target RAM operations
-: TC@ ( addr -- byte ) DUP IN_CHAR  = IF DROP GETC EXIT THEN RAM + C@ ;
-: TC! ( byte addr -- ) DUP OUT_CHAR = IF DROP EMIT EXIT THEN RAM + C! ;
+DEFER READ_HOOK
+DEFER WRIT_HOOK
+
+: TC@ ( addr -- byte ) READ_HOOK ( ELSE ) RAM + C@ ;
+: TC! ( byte addr -- ) WRIT_HOOK ( ELSE ) RAM + C! ;
 : T@  ( addr -- word )
   DUP TC@       \ LO
   SWAP 1+ TC@   \ HI
   $100 * + \ LO HI --> HILO
 ;
+
+: CHAR_IN? ( addr -- byte ) DUP IN_CHAR  = IF DROP GETC RDROP THEN ;
+: CHAR_OU? ( byte addr -- ) DUP OU_CHAR  = IF DROP EMIT RDROP THEN ;
+
+' CHAR_IN? IS READ_HOOK
+' CHAR_OU? IS WRIT_HOOK
 
 0000 VALUE THERE \ Target HERE
 : TC, ( b -- ) THERE TC!   THERE 1+ TO THERE ;

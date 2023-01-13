@@ -638,6 +638,8 @@ FE _ 02 _ 60 _ 8D _ FF _ 02 _ 60 _
 \   >R >R DROP R> R> SWAP 1+ SWAP 1- ROT
 \ ;
 
+0 LDA \ will set the flags
+
 : n next ;
 : RESET $FFFC T@ _PC! ;
 : AlexForth $8000 s" forth-emu.bin" load-rom reset run ;

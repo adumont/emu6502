@@ -574,23 +574,23 @@ DEFER BREAKPOINT
 
 \ Test SBC
 
-: TEST-SBC
-  $100 0 DO
-    CLS 'C SET 'D CLEAR 10 LDA
-    CR _P C@ BIN. _A C? I C.
-    I SBC
-    ." SBC -> " _A C? _P C@ BIN.
-  LOOP
-;
+\ : TEST-SBC
+\   $100 0 DO
+\     CLS 'C SET 'D CLEAR 10 LDA
+\     CR _P C@ BIN. _A C? I C.
+\     I SBC
+\     ." SBC -> " _A C? _P C@ BIN.
+\   LOOP
+\ ;
 
-: TEST-ADC
-  $100 0 DO
-    CLS 'C CLEAR 'D CLEAR 10 LDA
-    CR _P C@ BIN. _A C? I C.
-    I ADC
-    ." ADC -> " _A C? _P C@ BIN.
-  LOOP
-;
+\ : TEST-ADC
+\   $100 0 DO
+\     CLS 'C CLEAR 'D CLEAR 10 LDA
+\     CR _P C@ BIN. _A C? I C.
+\     I ADC
+\     ." ADC -> " _A C? _P C@ BIN.
+\   LOOP
+\ ;
 
 \ Address  Hexdump   Dissassembly
 \ -------------------------------
@@ -608,10 +608,10 @@ DEFER BREAKPOINT
 \ $0615    8d ff 02  STA $02ff
 \ $0618    60        RTS
 
-0600 ORG
-A2 _ FF _ 9A _ A0 _ 0A _ 20 _ 11 _ 06 _ 18 _
-69 _ 01 _ 20 _ 15 _ 06 _ 88 _ D0 _ F4 _ AD _
-FE _ 02 _ 60 _ 8D _ FF _ 02 _ 60 _
+\ 0600 ORG
+\ A2 _ FF _ 9A _ A0 _ 0A _ 20 _ 11 _ 06 _ 18 _
+\ 69 _ 01 _ 20 _ 15 _ 06 _ 88 _ D0 _ F4 _ AD _
+\ FE _ 02 _ 60 _ 8D _ FF _ 02 _ 60 _
 
 0 VALUE FD
 0 VALUE LEN

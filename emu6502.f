@@ -653,10 +653,10 @@ DEFER BREAKPOINT
 
   CR ." Address  Hexdump   Dissassembly"
   CR ." -------------------------------"
-  CR ." $0600    a9 0a     LDA #$0a"
+  CR ." $0600    a9 12     LDA #$12"
   CR ." $0602    85 30     STA $30"
   CR
-  0600 ORG a9 _ 0a _ 85 _ 30 _
+  0600 ORG a9 _ 12 _ 85 _ 30 _
   00 _A C! 00 30 TC!
   status
   CR ." Use n to run step by step " CR

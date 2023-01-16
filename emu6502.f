@@ -221,6 +221,7 @@ DEFER BREAKPOINT
 :NONAME ( JMP AINDX  ) WORD@ _X C@ + T@ _PC! ; $7C BIND \ JMP (a,x)
 
 : LDA ( b -- ) >NZ _A C! ;
+0 LDA \ will set the flags
 :NONAME ( LDA IMM    ) BYTE@      LDA ; $A9 BIND \ LDA #
 :NONAME ( LDA ZP     ) 'ZP    TC@ LDA ; $A5 BIND \ LDA zp
 :NONAME ( LDA ABS    ) 'ABS   TC@ LDA ; $AD BIND \ LDA a
@@ -637,8 +638,6 @@ FE _ 02 _ 60 _ 8D _ FF _ 02 _ 60 _
 \   >NUMBER
 \   >R >R DROP R> R> SWAP 1+ SWAP 1- ROT
 \ ;
-
-0 LDA \ will set the flags
 
 : n next ;
 : RESET $FFFC T@ _PC! ;

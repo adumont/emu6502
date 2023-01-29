@@ -401,7 +401,7 @@ DEFER BREAKPOINT
 : V? ( bcdM bcdA bcdResult -- v ) SWAP OVER XOR -ROT XOR AND $80 AND ;
 
 : ADC ( byte -- )
-  DUP >BIN _A C@ DUP >BIN -ROT + C> + >BCD
+  DUP >BIN _A C@ DUP >BIN ROT + C> + >BCD
   $100 /MOD >C DUP LDA
   V? >V ( set overflow flag ) ;
 

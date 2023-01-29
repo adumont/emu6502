@@ -273,7 +273,7 @@ DEFER BREAKPOINT
 :NONAME ( LDX ZP     ) 'ZP    TC@ LDX ; $A6 BIND \ LDX zp
 :NONAME ( LDX ABS    ) 'ABS   TC@ LDX ; $AE BIND \ LDX a
 :NONAME ( LDX ABSY   ) 'ABSY  TC@ LDX ; $BE BIND \ LDX a,y
-:NONAME ( LDX ZPY    ) 'ZPY   TC@ LDA ; $B6 BIND \ LDX zp,y
+:NONAME ( LDX ZPY    ) 'ZPY   TC@ LDX ; $B6 BIND \ LDX zp,y
 
 : STX ( addr -- ) _X C@ SWAP TC! ;
 :NONAME ( STX ABS    ) 'ABS       STX ; $8E BIND \ STX a

@@ -147,13 +147,13 @@ DEFER BREAKPOINT
 : BIND ( xt opcode -- )   CELLS OPCODES + ! ; \ saves XT in OPCODES table
 
 \ -- Processor Flags handling
-%10000000 VALUE 'N    \ Negative flag
-%01000000 VALUE 'V    \ Overflow flag
-%00010000 VALUE 'B    \ Break flag, set whenever a BRK instruction is executed, clear at all other times
-%00001000 VALUE 'D    \ Decimal flag.
-%00000100 VALUE 'I    \ Interrupt disabled. When this bit is set, the computer will not honor interrupts
-%00000010 VALUE 'Z    \ Zero flag
-%00000001 VALUE 'C    \ Carry flag
+$80 VALUE 'N    \ Negative flag
+$40 VALUE 'V    \ Overflow flag
+$10 VALUE 'B    \ Break flag, set whenever a BRK instruction is executed, clear at all other times
+$08 VALUE 'D    \ Decimal flag.
+$04 VALUE 'I    \ Interrupt disabled. When this bit is set, the computer will not honor interrupts
+$02 VALUE 'Z    \ Zero flag
+$01 VALUE 'C    \ Carry flag
 
 : CLEAR ( mask -- ) NOT _P C@ AND _P C! ;
 : SET   ( mask -- )     _P C@ OR  _P C! ;

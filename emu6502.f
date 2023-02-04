@@ -726,3 +726,6 @@ $01 VALUE 'C    \ Carry flag
 : demo4
   CR ." Execute alexforth" CR
 ;
+
+: test1   $0000 s" tests/6502_functional_test.bin" load-rom reset $0400 org ;
+: test2   $0000 s" tests/65C02_extended_opcodes_test.bin" load-rom reset $0400 org ;

@@ -116,7 +116,20 @@ DEFER BREAKPOINT
 \ :NONAME C>    1 = ; IS BREAKPOINT \ break when C is set
 
 \ Default breakpoint is when last instr. was BRK ($00)
-:NONAME LASTINSTR $00 = ; IS BREAKPOINT
+: BPONBRK LASTINSTR $00 = ;
+' BPONBRK IS BREAKPOINT
+
+\ Breakpoint on infinite loop (PC won't change)
+0 VALUE LASTPC
+: BPONLOOP ( -- f ) _PC @ DUP LASTPC = SWAP TO LASTPC ;
+: BPONLOOP ['] BPONLOOP IS BREAKPOINT ;
+
+\ breakpoint on PC=PCBP
+0 VALUE PCBP
+: BPONPC ( -- f ) _PC @ PCBP = ;
+
+\ set breakpoint at addr
+: BREAKAT ( addr -- ) TO PCBP ['] BPONPC IS BREAKPOINT ;
 
 \ run until breakpoint is reached
 : RUN ( n -- )

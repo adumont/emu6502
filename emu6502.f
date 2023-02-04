@@ -74,12 +74,12 @@ DEFER WRIT_HOOK
 
 1 VALUE TRACE  \ flag, show Status or not in NEXT
 
-: BIN. 8 0 DO DUP $80 AND IF ." 1" ELSE ." 0" THEN 2* LOOP DROP SPACE ;
+: BIN. 8 0 DO DUP $80 AND IF ." 1" ELSE ." 0" THEN 2* LOOP DROP ;
 
 : STATUS
   CR #17 spaces ." NV-BDIZC"
   CR ." A:" _A C? ." X:" _X C? ." Y:" _Y C?
-     ." P:" _P C@ BIN. ." SP:" _SP C? ." PC:" _PC ? ." > " DUMPPC ;
+     ." P:" _P C@ DUP BIN. ." :" C. ." SP:" _SP C? ." PC:" _PC ? ." > " DUMPPC ;
 
 -1 VALUE LASTINSTR
 

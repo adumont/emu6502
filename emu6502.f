@@ -498,7 +498,7 @@ DEFER BREAKPOINT
 \ TSB A & M -> Z, A | M -> M
 : TSB ( addr -- ) DUP TC@ _A C@ 2DUP AND >Z DROP      OR SWAP TC! ;
 :NONAME ( TSB ABS    ) 'ABS TSB ; $0C BIND \ TSB a
-:NONAME ( TSB ZP     ) 'ZP  TRB ; $04 BIND \ TSB zp
+:NONAME ( TSB ZP     ) 'ZP  TSB ; $04 BIND \ TSB zp
 
 \ :NONAME ( STP IMPL   ) ; $DB BIND \ STP i
 \ :NONAME ( WAI IMPL   ) ; $CB BIND \ WAI i

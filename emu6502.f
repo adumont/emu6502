@@ -516,12 +516,13 @@ $01 VALUE 'C    \ Carry flag
 \ :NONAME ( STP IMPL   ) ; $DB BIND \ STP i
 \ :NONAME ( WAI IMPL   ) ; $CB BIND \ WAI i
 
-: BIT ( byte -- ) >N DUP 'V AND >V _A C@ AND >Z ;
-:NONAME ( BIT IMM    ) BYTE@     BIT ; $89 BIND \ BIT #
-:NONAME ( BIT ABS    ) 'ABS  TC@ BIT ; $2C BIND \ BIT a
-:NONAME ( BIT ZP     ) 'ZP   TC@ BIT ; $24 BIND \ BIT zp
-:NONAME ( BIT ABSX   ) 'ABSX TC@ BIT ; $3C BIND \ BIT a,x
-:NONAME ( BIT ZPX    ) 'ZPX  TC@ BIT ; $34 BIND \ BIT zp,x
+: BIT# ( byte -- ) _A C@ AND >Z ; \ BIT IMM doesn't set NV http://forum.6502.org/viewtopic.php?f=2&t=2241&p=27243#p27239
+: BIT  ( byte -- ) >N DUP 'V AND >V BIT# ;
+:NONAME ( BIT IMM    ) BYTE@     BIT# ; $89 BIND \ BIT #
+:NONAME ( BIT ABS    ) 'ABS  TC@ BIT  ; $2C BIND \ BIT a
+:NONAME ( BIT ZP     ) 'ZP   TC@ BIT  ; $24 BIND \ BIT zp
+:NONAME ( BIT ABSX   ) 'ABSX TC@ BIT  ; $3C BIND \ BIT a,x
+:NONAME ( BIT ZPX    ) 'ZPX  TC@ BIT  ; $34 BIND \ BIT zp,x
 
 : SMB ( addr mask -- ) OVER TC@ OR SWAP TC! ;
 :NONAME ( SMB0 ZP    ) 'ZP %00000001 SMB ; $87 BIND \ SMB0 zp

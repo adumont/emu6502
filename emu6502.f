@@ -338,8 +338,6 @@ $01 VALUE 'C    \ Carry flag
 :NONAME ( AND INDX   ) 'INDX  TC@ _AND ; $21 BIND \ AND (zp,x)
 :NONAME ( AND INDY   ) 'INDY  TC@ _AND ; $31 BIND \ AND (zp),y
 
-:NONAME ( NOP IMPL   ) ; $EA BIND \ NOP i
-
 : PUSH ( byte -- ) _SP C@ SWAP OVER $0100 OR TC! 1 - _SP C! ;
 :NONAME ( PHA STCK   ) _A C@ PUSH ; $48 BIND \ PHA s
 :NONAME ( PHX STCK   ) _X C@ PUSH ; $DA BIND \ PHX s
@@ -563,6 +561,64 @@ $01 VALUE 'C    \ Carry flag
 :NONAME ( BBS5 PCR   ) %00100000 BBS ; $DF BIND \ BBS5 r
 :NONAME ( BBS6 PCR   ) %01000000 BBS ; $EF BIND \ BBS6 r
 :NONAME ( BBS7 PCR   ) %10000000 BBS ; $FF BIND \ BBS7 r
+
+: NOP ; ' NOP $EA BIND \ NOP i
+
+\ Invalid opcodes are NOP's reserved for future opcodes (?)
+
+' NOP $03 BIND
+' NOP $0B BIND
+' NOP $13 BIND
+' NOP $1B BIND
+' NOP $23 BIND
+' NOP $2B BIND
+' NOP $33 BIND
+' NOP $3B BIND
+' NOP $43 BIND
+' NOP $4B BIND
+' NOP $53 BIND
+' NOP $5B BIND
+' NOP $63 BIND
+' NOP $6B BIND
+' NOP $73 BIND
+' NOP $7B BIND
+' NOP $83 BIND
+' NOP $8B BIND
+' NOP $93 BIND
+' NOP $9B BIND
+' NOP $A3 BIND
+' NOP $AB BIND
+' NOP $B3 BIND
+' NOP $BB BIND
+' NOP $C2 BIND
+' NOP $C3 BIND
+' NOP $D3 BIND
+' NOP $E2 BIND
+' NOP $E3 BIND
+' NOP $EB BIND
+' NOP $F3 BIND
+' NOP $FB BIND
+
+\ advance PC by 1
+: PC1+ ( -- ) _PC @ 1+ _PC! ;
+
+' PC1+ $02 BIND
+' PC1+ $22 BIND
+' PC1+ $42 BIND
+' PC1+ $62 BIND
+' PC1+ $82 BIND
+' PC1+ $44 BIND
+' PC1+ $54 BIND
+' PC1+ $D4 BIND
+' PC1+ $F4 BIND
+
+\ advance PC by 2
+: PC2+ ( -- )  _PC @ 2+ _PC! ;
+
+' PC2+ $DC BIND
+' PC2+ $FC BIND
+' PC2+ $5C BIND
+
 
 \ TESTS
 : T?= ( a b -- )    OVER OVER = 0= IF SWAP CR ." ** Expected " C. ." got " C. ." ** " ABORT THEN 2DROP ;

@@ -22,7 +22,7 @@ HEX
 \ : CELLS CELL * ;
 
 CREATE _A  0 C,   CREATE _X  0 C,   CREATE _Y    0 C,
-CREATE _SP 0 C,   CREATE _PC 0  ,   CREATE _P  $30 C,
+CREATE _SP 0 C,   CREATE _PC 0  ,   CREATE _P  $34 C,
 
 : LDP  ( byte -- ) $30 OR _P C! ;
 
@@ -101,7 +101,10 @@ CREATE XEQTIME $100 CELLS ALLOT
 ;
 RESETSTATS
 
+DEFER INT_HANDLER
+
 : NEXT
+  INT_HANDLER
   STAT(
   ( FETCH   ) BYTE@ DUP TO LASTINSTR
   ( DECODE  ) CELLS OPCODES + @
@@ -167,6 +170,7 @@ $01 VALUE 'C    \ Carry flag
 
 : C>   (   -- f ) _P C@ 'C AND ;
 : D>   (   -- f ) _P C@ 'D AND ;
+: I>   (   -- f ) _P C@ 'I AND ;
 
 \ 65C02 Addressing Modes
 
@@ -200,8 +204,6 @@ $01 VALUE 'C    \ Carry flag
 : 'INDY ( -- addr ) BYTE@ T@ _Y C@ + ;          \ Zero Page Indirect Indexed with Y (zp), y
 
 \ -- boilerplate opcodes definitions to be defined
-
-:NONAME ( BRK STCK   ) 'B SET ." BRK" CR ; $00 BIND \ BRK s
 
 : ?BRA ( f -- ) BYTE@ SWAP IF _PC @ SWAP DUP $80 AND IF FF00 OR NEG - ELSE + THEN _PC! ELSE DROP THEN ;
 :NONAME ( BRA PCR    ) 1               ?BRA ; $80 BIND \ BRA r
@@ -563,6 +565,37 @@ $01 VALUE 'C    \ Carry flag
 :NONAME ( BBS5 PCR   ) %00100000 BBS ; $DF BIND \ BBS5 r
 :NONAME ( BBS6 PCR   ) %01000000 BBS ; $EF BIND \ BBS6 r
 :NONAME ( BBS7 PCR   ) %10000000 BBS ; $FF BIND \ BBS7 r
+
+1 VALUE NMI_LINE
+1 VALUE IRQ_LINE
+
+: INT_START ( -- )
+  _PC @ $FFFF AND $100 /MOD ( PCH ) PUSH ( PCL ) PUSH
+  _P C@
+  $EF AND \ Clear B flag
+  PUSH
+  'D CLEAR
+  'I SET
+;
+
+: NMI_FIRED ( -- ) INT_START $FFFA T@ _PC! ;
+: IRQ_FIRED ( -- ) INT_START $FFFE T@ _PC! ;
+
+: (INT_HANDLER) ( -- )
+  NMI_LINE 0= IF NMI_FIRED EXIT THEN
+  IRQ_LINE 0= IF I> 0= IF IRQ_FIRED EXIT THEN THEN
+;
+
+' (INT_HANDLER) IS INT_HANDLER
+
+:NONAME ( BRK STCK   )
+  _PC @ 1+ $FFFF AND $100 /MOD ( PCH ) PUSH ( PCL ) PUSH
+  _P C@
+  PUSH
+  'D CLEAR
+  'I SET
+  $FFFE T@ _PC!
+; $00 BIND \ BRK s
 
 \ Invalid opcodes are NOP's reserved for future opcodes (?)
 

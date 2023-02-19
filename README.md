@@ -8,8 +8,6 @@ I tested 🔎the emulator against Klaus2m5 6502 CPU tests, and after fixing 4 bu
 - ✅ all 6502 tests 👍(*)
 - ✅ all 65C02 tests👍
 
-(* w/ the exception of the interrupt tests, because I haven't implemented interrupts yet😉)
-
 ## Documentation
 
 This is the recording, and slides, of the presentation I gave to the FORTH2020 users meeting on Jan 21st, 2023 about how I implemented Emu6502, a 65C02 emulator written in Forth.

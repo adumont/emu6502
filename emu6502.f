@@ -518,7 +518,6 @@ $01 VALUE 'C    \ Carry flag
 :NONAME ( TSB ZP     ) 'ZP  TSB ; $04 BIND \ TSB zp
 
 \ :NONAME ( STP IMPL   ) ; $DB BIND \ STP i
-\ :NONAME ( WAI IMPL   ) ; $CB BIND \ WAI i
 
 : BIT# ( byte -- ) _A C@ AND >Z ; \ BIT IMM doesn't set NV http://forum.6502.org/viewtopic.php?f=2&t=2241&p=27243#p27239
 : BIT  ( byte -- ) >N DUP 'V AND >V BIT# ;
@@ -599,6 +598,8 @@ $01 VALUE 'C    \ Carry flag
   'I SET
   $FFFE T@ _PC!
 ; $00 BIND \ BRK s
+
+:NONAME ( WAI IMPL   ) BEGIN IRQ_LINE NMI_LINE AND 0= UNTIL ; $CB BIND \ WAI i
 
 \ Invalid opcodes are NOP's reserved for future opcodes (?)
 

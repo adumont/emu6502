@@ -118,8 +118,8 @@ DEFER BREAKPOINT
 \ :NONAME _A C@ 1 = ; IS BREAKPOINT \ break when A=1
 \ :NONAME C>    1 = ; IS BREAKPOINT \ break when C is set
 
-\ Default breakpoint is when last instr. was BRK ($00)
-: BPONBRK LASTINSTR $00 = ;
+\ Default breakpoint is when next instr. is BRK ($00)
+: BPONBRK _PC @ TC@ 0= ;
 ' BPONBRK IS BREAKPOINT
 
 \ Breakpoint on infinite loop (PC won't change)

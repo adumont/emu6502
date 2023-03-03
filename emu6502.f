@@ -749,8 +749,15 @@ $01 VALUE 'C    \ Carry flag
   CR ." -------------------------------"
   CR ." $0600    a9 12     LDA #$12"
   CR ." $0602    85 30     STA $30"
+  CR ." $0604    00 ff     BRK $ff"
   CR
-  0600 ORG a9 _ 12 _ 85 _ 30 _
+
+  0700 ORG
+  88 _ 88 _ 88 _ 40 _
+  07 $FFFF TC!
+  00 $FFFE TC!
+
+  0600 ORG a9 _ 12 _ 85 _ 30 _ 00 _ FF _
   00 _A C! 00 30 TC!
   status
   CR ." Use n to run step by step " CR
@@ -766,6 +773,12 @@ $01 VALUE 'C    \ Carry flag
   CR ." $0608    d0 f8     BNE $0602"
   CR ." $060a    00        BRK"
   CR
+
+  0700 ORG
+  88 _ 88 _ 88 _ 40 _
+  07 $FFFF TC!
+  00 $FFFE TC!
+
   0600 ORG
   a2 _ 61 _ 8e _ 01 _ f0 _ e8 _ e0 _ 7b _ d0 _ f8 _ 00 _
   status

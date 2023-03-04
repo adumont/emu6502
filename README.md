@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Development Emu6502 started on AlexForth, on 6502, but I rapidly switched to gForth, due the inherent limitations of developping on a 6502 host (64K address space).
+Development of Emu6502 started on AlexForth, on 6502, but I rapidly switched to gForth, due the inherent limitations of developping on a 6502 host (64K address space).
 
 I tested 🔎the emulator against Klaus2m5 6502 CPU tests, and after fixing 4 bugs 🪳, I can now proudly say it passes :
 - ✅ all 6502 tests 👍

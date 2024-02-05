@@ -664,6 +664,7 @@ DEFER BREAKPOINT
 : AlexForth $8000 s" forth-emu.bin" load-rom reset CR run ;
 : AlexMon   $8000 s" monitor/monitor.bin" load-rom reset CR run ;
 : Chatbot   $8000 s" chatbot/chatbot.bin" load-rom reset run ;
+: ski $8000 s" ski.bin" load-rom reset CR run ;
 
 \ : mybrk _PC @ 8562 = ; ' mybrk IS BREAKPOINT
 
@@ -712,3 +713,6 @@ DEFER BREAKPOINT
 : demo4
   CR ." Execute alexforth" CR
 ;
+
+\ Run tests
+\ : tests   $0000 s" tests/6502_functional_test.bin" load-rom 0400 org run ;
